@@ -15,7 +15,7 @@ var Allagash = {
             .range([0, 10]);
         zoomController.x(this.yScale).y(this.xScale)
             .on('zoom', function () {
-                _this.zoom(_this.root);
+                //_this.zoom();
             });
 
         this.tree = d3.layout.tree()
@@ -76,32 +76,57 @@ var Allagash = {
         var xOffset = 0; // remember, x and y are swapped.
         var root = this.root;
         var lastDepth, pathFound;
+        var nodeCache = [];
+        var totalShiftAmount = 0;
 
         // Compute the new tree layout.
         var nodes = this.tree.nodes(this.root).reverse();
+
+        // sort the nodes by depth and x position
+        nodes.sort(function (a, b) {
+            var result = b.depth - a.depth;
+            if (result === 0) {
+                result = b.x - a.x;
+            }
+            return result;
+        });
 
         if (root.x > 700 || root.x < 100) {
             xOffset = 400 - root.x;
         }
 
         // Normalize for fixed-depth.
+        var applyShift = function (shiftAmount) {
+            if (shiftAmount) {
+                // Apply the shift amount to the cache.
+                nodeCache.forEach(function (d) {
+                    d.x += shiftAmount;
+                });
+            }
+        };
         nodes.forEach(function (d) {
-            var depth = d.depth, shiftAmount = 0;
+            var depth = d.depth,
+                inPath = !!d.children;
 
             if (depth != lastDepth) {
+                nodeCache = [];
                 pathFound = false;
                 lastDepth = depth;
             }
-            if (depth <= _this.openedDepth) {
-                if (d.inPath) {
-                    pathFound = true;
-                } else {
-                    shiftAmount = pathFound ? -25 : 25;
+
+            if (inPath) {
+                totalShiftAmount += 25;
+                applyShift(totalShiftAmount);
+                pathFound = true;
+            } else {
+                if (pathFound) {
+                    d.x -= 25;
                 }
             }
+            nodeCache.push(d);
 
             d.y = depth * 300;
-            d.x += xOffset + shiftAmount;
+            d.x += xOffset;
 
         });
 
@@ -118,9 +143,8 @@ var Allagash = {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
             .on("click", function (d) {
-                _this.toggle(d);
                 _this.collapseSiblings(d);
-                _this.update(d);
+                _this.toggle(d);
             });
 
         nodeEnter.append("svg:circle")
@@ -200,8 +224,6 @@ var Allagash = {
             })
             .remove();
 
-        this.zoom();
-
         // Stash the old positions for transition.
         nodes.forEach(function (d) {
             d.x0 = d.x;
@@ -209,30 +231,36 @@ var Allagash = {
         });
     },
 
+    /**
+     * Shows/hide the children of a give node.  Calls update.
+     * @param node
+     */
     toggle: function (node) {
+        var _this = this;
         if (node.children) {
             node._children = node.children;
             delete node.children;
-            node.inPath = false;
-            this.openedDepth = node.depth - 1;
+            this.update(node);
         } else {
             if (node._children) {
                 node.children = node._children;
                 delete node._children;
+                this.update(node);
             } else {
-                this.loadChildren(node);
+                this.loadChildren(node, function (node) {
+                    _this.update(node);
+                });
             }
-            node.inPath = true;
-            this.openedDepth = node.depth;
         }
     },
 
-    loadChildren: function (node) {
+    loadChildren: function (node, callback) {
         var _this = this;
         if (!node.children) {
             node.children = [];
         }
         d3.json(node.outgoing_relationships, function (json) {
+            json = json.splice(0, 10);
             var count = json.length;
             json.forEach(function (outgoing) {
                     _this.loadNode(outgoing.end, function (endNode) {
@@ -240,6 +268,7 @@ var Allagash = {
                         count--;
                         if (count === 0) {
                             node.childrenLoaded = true;
+                            callback(node);
                         }
                     });
             });
