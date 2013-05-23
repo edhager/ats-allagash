@@ -45,6 +45,7 @@ var Allagash = {
         var duration = d3.event && d3.event.altKey ? 5000 : 500;
         var xOffset = 0; // remember, x and y are swapped.
         var root = this.root;
+        var lastDepth, pathFound;
 
         // Compute the new tree layout.
         var nodes = this.tree.nodes(this.root).reverse();
@@ -55,8 +56,23 @@ var Allagash = {
 
         // Normalize for fixed-depth.
         nodes.forEach(function (d) {
-            d.y = d.depth * 300;
-            d.x += xOffset;
+            var depth = d.depth, shiftAmount = 0;
+
+            if (depth != lastDepth) {
+                pathFound = false;
+                lastDepth = depth;
+            }
+            if (depth <= _this.openedDepth) {
+                if (d.inPath) {
+                    pathFound = true;
+                } else {
+                    shiftAmount = pathFound ? -25 : 25;
+                }
+            }
+
+            d.y = depth * 300;
+            d.x += xOffset + shiftAmount;
+
         });
 
         // Update the nodes…
@@ -164,7 +180,8 @@ var Allagash = {
         if (node.children) {
             node._children = node.children;
             delete node.children;
-            node.inPath = true;
+            node.inPath = false;
+            this.openedDepth = node.depth - 1;
         } else {
             if (node._children) {
                 node.children = node._children;
@@ -173,6 +190,7 @@ var Allagash = {
                 this.loadChildren(node);
             }
             node.inPath = true;
+            this.openedDepth = node.depth;
         }
     },
 
