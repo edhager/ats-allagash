@@ -1,4 +1,4 @@
-var Aventinus = {
+var Allagash = {
 
     go: function () {
 

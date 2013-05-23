@@ -25,4 +25,4 @@ http.createServer(function(req, res) {
       res.end('Error 404: File not found');
     });
 }).listen(port);
-console.log('Aventinus at http://localhost:' + port);
+console.log('Allagash at http://localhost:' + port);
