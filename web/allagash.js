@@ -161,10 +161,7 @@ var Allagash = {
             });
 
         nodeEnter.append("svg:circle")
-            .attr("r", 1e-6)
-            .style("fill", function (d) {
-                return d._children ? "lightsteelblue" : "#fff";
-            });
+            .attr("r", 1e-6);
 
         nodeEnter.append("svg:text")
             .attr("x", function (d) {
@@ -184,10 +181,7 @@ var Allagash = {
             });
 
         nodeUpdate.select("circle")
-            .attr("r", 4.5)
-            .style("fill", function (d) {
-                return d._children ? "lightsteelblue" : "#fff";
-            });
+            .attr("r", 4.5);
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1);
