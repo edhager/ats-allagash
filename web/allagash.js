@@ -5,6 +5,18 @@ var Allagash = {
         var _this = this, m = this.graphMargins;
 
         this.nodeIdGen = 0;
+        var zoomController = this.zoomController = d3.behavior.zoom()
+            .scaleExtent([.1, 30]);
+        this.xScale = d3.scale.linear()
+            .domain([0, 10])
+            .range([0, 10]);
+        this.yScale = d3.scale.linear()
+            .domain([0, 10])
+            .range([0, 10]);
+        zoomController.x(this.yScale).y(this.xScale)
+            .on('zoom', function () {
+                _this.zoom(_this.root);
+            });
 
         this.tree = d3.layout.tree()
             .size(null)
@@ -15,6 +27,8 @@ var Allagash = {
 
         var svg = d3.select("#graph").append("svg:svg");
         this.vis = svg.attr("width", "100%")
+            .attr('pointer-events', 'all')
+            .call(zoomController)
             .attr("height", "100%")
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
@@ -37,6 +51,22 @@ var Allagash = {
                     callback(node);
                 });
             }
+        });
+    },
+
+    zoom: function () {
+        var _this = this;
+        this.node.attr("transform", function (d) {
+            return "translate(" + _this.yScale(d.y) + "," + _this.xScale(d.x) + ")";
+        });
+
+        this.link.attr("d", function (d) {
+            var source = d.source,
+                target = d.target;
+
+            source = {x: _this.xScale(source.x), y: _this.yScale(source.y)};
+            target = {x: _this.xScale(target.x), y: _this.yScale(target.y)};
+            return _this.diagonal({source: source, target: target});
         });
     },
 
@@ -76,7 +106,7 @@ var Allagash = {
         });
 
         // Update the nodes…
-        var node = this.vis.selectAll("g.node")
+        var node = this.node = this.vis.selectAll("g.node")
             .data(nodes, function (d) {
                 return d.id || (d.id = ++_this.nodeIdGen);
             });
@@ -89,6 +119,7 @@ var Allagash = {
             })
             .on("click", function (d) {
                 _this.toggle(d);
+                _this.collapseSiblings(d);
                 _this.update(d);
             });
 
@@ -139,7 +170,7 @@ var Allagash = {
             .style("fill-opacity", 1e-6);
 
         // Update the links…
-        var link = this.vis.selectAll("path.link")
+        var link = this.link = this.vis.selectAll("path.link")
             .data(this.tree.links(nodes), function (d) {
                 return d.target.id;
             });
@@ -168,6 +199,8 @@ var Allagash = {
                 return _this.diagonal({source: o, target: o});
             })
             .remove();
+
+        this.zoom();
 
         // Stash the old positions for transition.
         nodes.forEach(function (d) {
@@ -207,10 +240,25 @@ var Allagash = {
                         count--;
                         if (count === 0) {
                             node.childrenLoaded = true;
-                            _this.update(node);
                         }
                     });
             });
         });
+    },
+
+    // toggle siblings of the current node.
+    collapseSiblings: function (node) {
+        var _this = this;
+        if (node.parent) {
+            var nodes = node.parent.children;
+            if (nodes) {
+                nodes.forEach(function (d) {
+                    if (d.id !== node.id && d.children) {
+                        _this.toggle(d);
+                    }
+                });
+            }
+        }
     }
+
 };
