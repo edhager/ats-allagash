@@ -1,5 +1,19 @@
 var Allagash = {
 
+    nameFormatters: {
+        APL: function (data) {
+            return data.ric + ' - ' + data.nomenclature;
+        },
+
+        StockItem: function (data) {
+            return data.fsc + ' - ' + data.niin + ' - ' + data.nomenclature;
+        },
+
+        Part: function (data) {
+            return data.part_number + ' - ' + data.cage;
+        }
+    },
+
     go: function () {
 
         var _this = this, m = this.graphMargins;
@@ -20,7 +34,7 @@ var Allagash = {
 
         this.tree = d3.layout.tree()
             .size(null)
-            .elementsize([15, 240]);
+            .elementsize([15, 400]);
 
         this.diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
@@ -42,12 +56,12 @@ var Allagash = {
     },
 
     loadNode: function (url, callback) {
-
+        var _this = this;
         d3.json(url, function (node) {
             if (node) {
                 d3.json(node.labels, function (labels) {
                     var data = node.data;
-                    node.name = labels[0] + ':' + data.ric + ' - ' + data.nomenclature;
+                    node.name = labels[0] + ': ' + _this.nameFormatters[labels[0]](data);
                     callback(node);
                 });
             }
@@ -125,7 +139,6 @@ var Allagash = {
             }
             nodeCache.push(d);
 
-            d.y = depth * 300;
             d.x += xOffset;
 
         });
