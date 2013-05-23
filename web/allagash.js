@@ -1,5 +1,8 @@
 var Allagash = {
 
+    // The amount of whitespace above and below nodes that have children showing.
+    pathMargin: 35,
+
     nameFormatters: {
         APL: function (data) {
             return data.ric + ' - ' + data.nomenclature;
@@ -92,6 +95,7 @@ var Allagash = {
         var lastDepth, pathFound;
         var nodeCache = [];
         var totalShiftAmount = 0;
+        var pathMargin = this.pathMargin;
 
         // Compute the new tree layout.
         var nodes = this.tree.nodes(this.root).reverse();
@@ -129,12 +133,12 @@ var Allagash = {
             }
 
             if (inPath) {
-                totalShiftAmount += 25;
+                totalShiftAmount += pathMargin;
                 applyShift(totalShiftAmount);
                 pathFound = true;
             } else {
                 if (pathFound) {
-                    d.x -= 25;
+                    d.x -= pathMargin;
                 }
             }
             nodeCache.push(d);
@@ -267,7 +271,6 @@ var Allagash = {
             node.children = [];
         }
         d3.json(node.outgoing_relationships, function (json) {
-            json = json.splice(0, 10);
             var count = json.length;
             json.forEach(function (outgoing) {
                     _this.loadNode(outgoing.end, function (endNode) {
