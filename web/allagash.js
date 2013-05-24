@@ -15,7 +15,7 @@ var Allagash = {
             .range([0, 10]);
         zoomController.x(this.yScale).y(this.xScale)
             .on('zoom', function () {
-                //_this.zoom();
+                _this.zoom();
             });
 
         this.tree = d3.layout.tree()
@@ -140,7 +140,7 @@ var Allagash = {
         var nodeEnter = node.enter().append("svg:g")
             .attr("class", "node")
             .attr("transform", function (d) {
-                return "translate(" + source.y0 + "," + source.x0 + ")";
+                return "translate(" + _this.yScale(source.y0) + "," + _this.xScale(source.x0) + ")";
             })
             .on("click", function (d) {
                 _this.collapseSiblings(d);
@@ -167,7 +167,7 @@ var Allagash = {
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return "translate(" + d.y  + "," + d.x + ")";
+                return "translate(" + _this.yScale(d.y)  + "," + _this.xScale(d.x) + ")";
             });
 
         nodeUpdate.select("circle")
@@ -183,7 +183,7 @@ var Allagash = {
         var nodeExit = node.exit().transition()
             .duration(duration)
             .attr("transform", function (d) {
-                return "translate(" + source.y  + "," + source.x + ")";
+                return "translate(" + _this.yScale(source.y)  + "," + _this.xScale(source.x) + ")";
             })
             .remove();
 
@@ -203,23 +203,35 @@ var Allagash = {
         link.enter().insert("svg:path", "g")
             .attr("class", "link")
             .attr("d", function (d) {
-                var o = {x: source.x0, y: source.y0};
+                var o = {x: _this.xScale(source.x0), y: _this.yScale(source.y0)};
                 return _this.diagonal({source: o, target: o});
             })
             .transition()
             .duration(duration)
-            .attr("d", this.diagonal);
+            .attr("d", function (d) {
+                var source = d.source,
+                    target = d.target;
+                source = {x: _this.xScale(source.x), y: _this.yScale(source.y)};
+                target = {x: _this.xScale(target.x), y: _this.yScale(target.y)};
+                return _this.diagonal({source: source, target: target});
+            });
 
         // Transition links to their new position.
         link.transition()
             .duration(duration)
-            .attr("d", this.diagonal);
+            .attr("d", function (d) {
+                var source = d.source,
+                    target = d.target;
+                source = {x: _this.xScale(source.x), y: _this.yScale(source.y)};
+                target = {x: _this.xScale(target.x), y: _this.yScale(target.y)};
+                return _this.diagonal({source: source, target: target});
+            });
 
         // Transition exiting nodes to the parent's new position.
         link.exit().transition()
             .duration(duration)
             .attr("d", function (d) {
-                var o = {x: source.x, y: source.y};
+                var o = {x: _this.xScale(source.x), y: _this.yScale(source.y)};
                 return _this.diagonal({source: o, target: o});
             })
             .remove();
