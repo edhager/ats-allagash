@@ -96,6 +96,7 @@ var Allagash = {
         var nodeCache = [];
         var totalShiftAmount = 0;
         var pathMargin = this.pathMargin;
+        var elementsize = _this.tree.elementsize();
 
         // Compute the new tree layout.
         var nodes = this.tree.nodes(this.root).reverse();
@@ -167,14 +168,22 @@ var Allagash = {
         nodeEnter.append("svg:circle")
             .attr("r", 1e-6);
 
+        nodeEnter.append("svg:rect")
+            .style('fill', '#B8D7FF')
+            .attr("x", 8)
+            .attr("y", -7)
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("width", elementsize[1])
+            .attr("height", elementsize[0]);
+
         nodeEnter.append("svg:text")
-            .attr("x", function (d) {
-                return 10;
-            })
+            .attr("x", 10)
             .attr("dy", ".35em")
             .text(function (d) {
                 return d.name;
             })
+            .style('font-family', 'monospace')
             .style("fill-opacity", 1e-6);
 
         // Transition nodes to their new position.
