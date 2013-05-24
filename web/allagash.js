@@ -1,5 +1,22 @@
 var Allagash = {
 
+    // The amount of whitespace above and below nodes that have children showing.
+    pathMargin: 35,
+
+    nameFormatters: {
+        APL: function (data) {
+            return data.ric + ' - ' + data.nomenclature;
+        },
+
+        StockItem: function (data) {
+            return data.fsc + ' - ' + data.niin + ' - ' + data.nomenclature;
+        },
+
+        Part: function (data) {
+            return data.part_number + ' - ' + data.cage;
+        }
+    },
+
     go: function () {
 
         var _this = this, m = this.graphMargins;
@@ -20,7 +37,7 @@ var Allagash = {
 
         this.tree = d3.layout.tree()
             .size(null)
-            .elementsize([15, 240]);
+            .elementsize([15, 400]);
 
         this.diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
@@ -42,12 +59,12 @@ var Allagash = {
     },
 
     loadNode: function (url, callback) {
-
+        var _this = this;
         d3.json(url, function (node) {
             if (node) {
                 d3.json(node.labels, function (labels) {
                     var data = node.data;
-                    node.name = labels[0] + ':' + data.ric + ' - ' + data.nomenclature;
+                    node.name = labels[0] + ': ' + _this.nameFormatters[labels[0]](data);
                     callback(node);
                 });
             }
@@ -78,6 +95,7 @@ var Allagash = {
         var lastDepth, pathFound;
         var nodeCache = [];
         var totalShiftAmount = 0;
+        var pathMargin = this.pathMargin;
 
         // Compute the new tree layout.
         var nodes = this.tree.nodes(this.root).reverse();
@@ -115,17 +133,16 @@ var Allagash = {
             }
 
             if (inPath) {
-                totalShiftAmount += 25;
+                totalShiftAmount += pathMargin;
                 applyShift(totalShiftAmount);
                 pathFound = true;
             } else {
                 if (pathFound) {
-                    d.x -= 25;
+                    d.x -= pathMargin;
                 }
             }
             nodeCache.push(d);
 
-            d.y = depth * 300;
             d.x += xOffset;
 
         });
@@ -148,10 +165,7 @@ var Allagash = {
             });
 
         nodeEnter.append("svg:circle")
-            .attr("r", 1e-6)
-            .style("fill", function (d) {
-                return d._children ? "lightsteelblue" : "#fff";
-            });
+            .attr("r", 1e-6);
 
         nodeEnter.append("svg:text")
             .attr("x", function (d) {
@@ -171,10 +185,7 @@ var Allagash = {
             });
 
         nodeUpdate.select("circle")
-            .attr("r", 4.5)
-            .style("fill", function (d) {
-                return d._children ? "lightsteelblue" : "#fff";
-            });
+            .attr("r", 4.5);
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1);
@@ -272,7 +283,6 @@ var Allagash = {
             node.children = [];
         }
         d3.json(node.outgoing_relationships, function (json) {
-            json = json.splice(0, 10);
             var count = json.length;
             json.forEach(function (outgoing) {
                     _this.loadNode(outgoing.end, function (endNode) {
