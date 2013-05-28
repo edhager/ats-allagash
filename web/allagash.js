@@ -110,9 +110,10 @@ var Allagash = {
                         d.x += shiftAmount;
                     });
                 }
-            };
+            },
+            trans = source.children ? -source.y : (((source.depth||1)-1) * elementsize[1]);
 
-        this.zoomController.translate([0,0]);
+        this.zoomController.translate([trans,0]);
 
         // Compute the new tree layout.
         nodes = this.tree.nodes(this.root).reverse();
