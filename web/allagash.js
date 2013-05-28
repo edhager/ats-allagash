@@ -194,31 +194,14 @@ var Allagash;
                     return d.id;
                 });
 
-            // Enter any new nodes at the parent's previous position.
-            nodeEnter = nodeSelection.enter().append("svg:g")
-                .attr("class", "node")
-                .attr("transform", function () {
-                    return "translate(" + self.yScale(source.y0) + "," + self.xScale(source.x0) + ")";
-                })
-                .on("click", function (d) {
-                    self.collapseSiblings(d);
-                    self.toggle(d);
-                })
-                .on('mouseover', function (d) {
-                    // show tooltip
-                    self.tooltip.text(d.name)
-                        .style('display', '');
-                })
-                .on('mousemove', function () {
-                    // update position
-                    self.tooltip
-                        .style('top', (d3.event.offsetY - 45) + 'px')
-                        .style('left', (d3.event.offsetX - 20) + 'px');
-                })
-                .on('mouseout', function () {
-                    // hide tooltip
-                    self.tooltip.style('display', 'none');
-                });
+        nodeEnter.append("svg:rect")
+            .style('fill', 'lightsteelblue')
+            .attr("x", 8)
+            .attr("y", -10)
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("width", elementsize[1] - 50)
+            .attr("height", elementsize[0] - 10);
 
             nodeEnter.append("svg:circle")
                 .attr("r", 1e-6);
@@ -232,13 +215,22 @@ var Allagash;
                 .attr("width", elementsize[1] - 50)
                 .attr("height", elementsize[0] - 10);
 
-            nodeEnter.append("svg:text")
-                .attr("x", 15)
-                .attr("dy", ".35em")
-                .text(function (d) {
-                    return d.name;
-                })
-                .style("fill-opacity", 1e-6);
+        nodeUpdate.select("rect")
+            .style('fill', function (d) {
+                if (d.children) {
+                    return 'lightcoral';
+                }
+                return 'lightsteelblue';
+            });
+
+        nodeUpdate.select("circle")
+            .style('fill', function (d) {
+                if (d.children) {
+                    return 'lightcoral';
+                }
+                return '#fff';
+            })
+            .attr("r", 4.5);
 
             // Transition nodes to their new position.
             nodeUpdate = nodeSelection.transition()
