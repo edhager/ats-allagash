@@ -89,9 +89,9 @@ var Allagash = {
     },
 
     update: function (source) {
-<<<<<<< HEAD
         var _this = this,
-            duration = d3.event && d3.event.altKey ? 5000 : 500,
+            visNode = _this.vis.node(),
+            duration = d3.event && d3.event.altKey ? 5000 : 500;
             xOffset = 0, // remember, x and y are swapped.
             root = this.root,
             lastDepth, pathFound,
@@ -110,18 +110,6 @@ var Allagash = {
                     });
                 }
             };
-=======
-        var _this = this;
-        var visNode = _this.vis.node();
-        var duration = d3.event && d3.event.altKey ? 5000 : 500;
-        var xOffset = 0; // remember, x and y are swapped.
-        var root = this.root;
-        var lastDepth, pathFound;
-        var nodeCache = [];
-        var totalShiftAmount = 0;
-        var pathMargin = this.pathMargin;
-        var elementsize = _this.tree.elementsize();
->>>>>>> 808e3a2b4d81e0920370e6789832d366d129cfd9
 
         // Compute the new tree layout.
         nodes = this.tree.nodes(this.root).reverse();
