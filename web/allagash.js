@@ -50,10 +50,11 @@ var Allagash = {
             .append("svg:g")
             .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
+        this.tooltip = d3.select('#tooltip')
+            .style('display', 'none');
+
         this.loadNode(this.firstRequest, function (node) {
             _this.root = node;
-            node.x0 = 0;
-            node.y0 = 0;
             _this.update(node);
         });
     },
@@ -73,11 +74,11 @@ var Allagash = {
 
     zoom: function () {
         var _this = this;
-        this.node.attr("transform", function (d) {
+        this.nodeSelection.attr("transform", function (d) {
             return "translate(" + _this.yScale(d.y) + "," + _this.xScale(d.x) + ")";
         });
 
-        this.link.attr("d", function (d) {
+        this.linkSelection.attr("d", function (d) {
             var source = d.source,
                 target = d.target;
 
@@ -88,6 +89,7 @@ var Allagash = {
     },
 
     update: function (source) {
+<<<<<<< HEAD
         var _this = this,
             duration = d3.event && d3.event.altKey ? 5000 : 500,
             xOffset = 0, // remember, x and y are swapped.
@@ -108,6 +110,18 @@ var Allagash = {
                     });
                 }
             };
+=======
+        var _this = this;
+        var visNode = _this.vis.node();
+        var duration = d3.event && d3.event.altKey ? 5000 : 500;
+        var xOffset = 0; // remember, x and y are swapped.
+        var root = this.root;
+        var lastDepth, pathFound;
+        var nodeCache = [];
+        var totalShiftAmount = 0;
+        var pathMargin = this.pathMargin;
+        var elementsize = _this.tree.elementsize();
+>>>>>>> 808e3a2b4d81e0920370e6789832d366d129cfd9
 
         // Compute the new tree layout.
         nodes = this.tree.nodes(this.root).reverse();
@@ -155,13 +169,13 @@ var Allagash = {
         });
 
         // Update the nodes…
-        var node = this.node = this.vis.selectAll("g.node")
+        var nodeSelection = this.nodeSelection = this.vis.selectAll("g.node")
             .data(nodes, function (d) {
                 return d.id || (d.id = ++_this.nodeIdGen);
             });
 
         // Enter any new nodes at the parent's previous position.
-        var nodeEnter = node.enter().append("svg:g")
+        var nodeEnter = nodeSelection.enter().append("svg:g")
             .attr("class", "node")
             .attr("transform", function (d) {
                 return "translate(" + _this.yScale(source.y0) + "," + _this.xScale(source.x0) + ")";
@@ -169,6 +183,21 @@ var Allagash = {
             .on("click", function (d) {
                 _this.collapseSiblings(d);
                 _this.toggle(d);
+            })
+            .on('mouseover', function (d) {
+                // show tooltip
+                _this.tooltip.text(d.name)
+                    .style('display', '');
+            })
+            .on('mousemove', function (d) {
+                // update position
+                _this.tooltip
+                    .style('top', (d3.event.offsetY - 45) + 'px')
+                    .style('left', (d3.event.offsetX - 20) + 'px');
+            })
+            .on('mouseout', function (d) {
+                // hide tooltip
+                _this.tooltip.style('display', 'none');
             });
 
         nodeEnter.append("svg:circle")
@@ -189,11 +218,10 @@ var Allagash = {
             .text(function (d) {
                 return d.name;
             })
-            .style('font-family', 'monospace')
             .style("fill-opacity", 1e-6);
 
         // Transition nodes to their new position.
-        var nodeUpdate = node.transition()
+        var nodeUpdate = nodeSelection.transition()
             .duration(duration)
             .attr("transform", function (d) {
                 return "translate(" + _this.yScale(d.y)  + "," + _this.xScale(d.x) + ")";
@@ -206,7 +234,7 @@ var Allagash = {
             .style("fill-opacity", 1);
 
         // Transition exiting nodes to the parent's new position.
-        var nodeExit = node.exit().transition()
+        var nodeExit = nodeSelection.exit().transition()
             .duration(duration)
             .attr("transform", function (d) {
                 return "translate(" + _this.yScale(source.y)  + "," + _this.xScale(source.x) + ")";
@@ -220,13 +248,13 @@ var Allagash = {
             .style("fill-opacity", 1e-6);
 
         // Update the links…
-        var link = this.link = this.vis.selectAll("path.link")
+        var linkSelection = this.linkSelection = this.vis.selectAll("path.link")
             .data(this.tree.links(nodes), function (d) {
                 return d.target.id;
             });
 
         // Enter any new links at the parent's previous position.
-        link.enter().insert("svg:path", "g")
+        linkSelection.enter().insert("svg:path", "g")
             .attr("class", "link")
             .attr("d", function (d) {
                 var o = {x: _this.xScale(source.x0), y: _this.yScale(source.y0)};
@@ -243,7 +271,7 @@ var Allagash = {
             });
 
         // Transition links to their new position.
-        link.transition()
+        linkSelection.transition()
             .duration(duration)
             .attr("d", function (d) {
                 var source = d.source,
@@ -254,7 +282,7 @@ var Allagash = {
             });
 
         // Transition exiting nodes to the parent's new position.
-        link.exit().transition()
+        linkSelection.exit().transition()
             .duration(duration)
             .attr("d", function (d) {
                 var o = {x: _this.xScale(source.x), y: _this.yScale(source.y)};
