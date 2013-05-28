@@ -185,9 +185,23 @@ var Allagash = {
             })
             .on('mousemove', function (d) {
                 // update position
+                var top = d3.event.offsetY - 45,
+                    left = d3.event.offsetX - 20,
+                    dimensions = _this.graphDimensions;
+
+                if (top < 0) {
+                    top = 0;
+                } else if (top > dimensions[0]) {
+                    top = dimensions[0];
+                }
+                if (left < 0) {
+                    left = 0;
+                } else if (left > dimensions[1]) {
+                    left = dimensions[1];
+                }
                 _this.tooltip
-                    .style('top', (d3.event.offsetY - 45) + 'px')
-                    .style('left', (d3.event.offsetX - 20) + 'px');
+                    .style('top', top + 'px')
+                    .style('left', left + 'px');
             })
             .on('mouseout', function (d) {
                 // hide tooltip
