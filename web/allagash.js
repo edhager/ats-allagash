@@ -99,6 +99,7 @@ var Allagash = {
             rootVerticalShift = 0,
             elementsize = _this.tree.elementsize(),
             nodes,
+            originalRootX,
             applyShift = function (shiftAmount) {
                 if (shiftAmount) {
                     // Apply the shift amount to the cache.
@@ -123,6 +124,7 @@ var Allagash = {
         if (root.x > 700 || root.x < 100) {
             xOffset = 400 - root.x;
         }
+        originalRootX = root.x;
 
         // Normalize for fixed-depth.
         nodes.forEach(function (d) {
@@ -137,19 +139,18 @@ var Allagash = {
             }
 
             if (inPath) {
-                rootVerticalShift = _this.getVerticalAlignOffset(d.x);
+                rootVerticalShift = d.x - originalRootX;
                 totalShiftAmount -= pathMargin + rootVerticalShift;
-                d.x -= rootVerticalShift;
                 applyShift(totalShiftAmount);
                 pathFound = true;
             } else {
                 if (pathFound) {
-                    d.x += pathMargin - rootVerticalShift;
+                    d.x += pathMargin;
                 }
             }
             nodeCache.push(d);
 
-            d.x += xOffset;
+            d.x += xOffset - rootVerticalShift;
 
         });
 
@@ -266,10 +267,6 @@ var Allagash = {
             d.x0 = d.x;
             d.y0 = d.y;
         });
-    },
-
-    getVerticalAlignOffset: function (x) {
-        return 0; //this.root.x - x;
     },
 
     /**
