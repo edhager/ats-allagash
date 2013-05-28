@@ -198,7 +198,7 @@ var Allagash = {
             .attr("r", 1e-6);
 
         nodeEnter.append("svg:rect")
-            .style('fill', '#B8D7FF')
+            .style('fill', 'lightsteelblue')
             .attr("x", 8)
             .attr("y", -10)
             .attr("rx", 10)
@@ -221,7 +221,21 @@ var Allagash = {
                 return "translate(" + _this.yScale(d.y)  + "," + _this.xScale(d.x) + ")";
             });
 
+        nodeUpdate.select("rect")
+            .style('fill', function (d) {
+                if (d.children) {
+                    return 'lightcoral';
+                }
+                return 'lightsteelblue';
+            });
+
         nodeUpdate.select("circle")
+            .style('fill', function (d) {
+                if (d.children) {
+                    return 'lightcoral';
+                }
+                return '#fff';
+            })
             .attr("r", 4.5);
 
         nodeUpdate.select("text")
