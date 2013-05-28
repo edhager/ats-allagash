@@ -91,10 +91,11 @@ var Allagash = {
     update: function (source) {
         var _this = this,
             visNode = _this.vis.node(),
-            duration = d3.event && d3.event.altKey ? 5000 : 500;
+            duration = d3.event && d3.event.altKey ? 5000 : 500,
             xOffset = 0, // remember, x and y are swapped.
             root = this.root,
-            lastDepth, pathFound,
+            lastDepth,
+            pathFound,
             nodeCache = [],
             totalShiftAmount = 0,
             pathMargin = this.pathMargin,
