@@ -112,6 +112,8 @@ var Allagash = {
                 }
             };
 
+        this.zoomController.translate([0,0]);
+
         // Compute the new tree layout.
         nodes = this.tree.nodes(this.root).reverse();
 
