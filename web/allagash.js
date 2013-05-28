@@ -39,7 +39,7 @@ var Allagash = {
 
         this.tree = d3.layout.tree()
             .size(null)
-            .elementsize([15, 400]);
+            .elementsize([30, 450]);
 
         this.diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
@@ -91,25 +91,40 @@ var Allagash = {
     },
 
     update: function (source) {
-        var _this = this;
-        var visNode = _this.vis.node();
-        var duration = d3.event && d3.event.altKey ? 5000 : 500;
-        var xOffset = 0; // remember, x and y are swapped.
-        var root = this.root;
-        var lastDepth, pathFound;
-        var nodeCache = [];
-        var totalShiftAmount = 0;
-        var pathMargin = this.pathMargin;
-        var elementsize = _this.tree.elementsize();
+        var _this = this,
+            visNode = _this.vis.node(),
+            duration = d3.event && d3.event.altKey ? 5000 : 500,
+            xOffset = 0, // remember, x and y are swapped.
+            root = this.root,
+            lastDepth,
+            pathFound,
+            nodeCache = [],
+            totalShiftAmount = 0,
+            pathMargin = this.pathMargin,
+            rootVerticalShift = 0,
+            elementsize = _this.tree.elementsize(),
+            nodes,
+            originalRootX,
+            applyShift = function (shiftAmount) {
+                if (shiftAmount) {
+                    // Apply the shift amount to the cache.
+                    nodeCache.forEach(function (d) {
+                        d.x += shiftAmount;
+                    });
+                }
+            },
+            trans = source.children ? -source.y : (((source.depth||1)-1) * elementsize[1]);
+
+        this.zoomController.translate([trans,0]);
 
         // Compute the new tree layout.
-        var nodes = this.tree.nodes(this.root).reverse();
+        nodes = this.tree.nodes(this.root).reverse();
 
         // sort the nodes by depth and x position
         nodes.sort(function (a, b) {
-            var result = b.depth - a.depth;
+            var result = a.depth - b.depth;
             if (result === 0) {
-                result = b.x - a.x;
+                result = a.x - b.x;
             }
             return result;
         });
@@ -117,16 +132,9 @@ var Allagash = {
         if (root.x > 700 || root.x < 100) {
             xOffset = 400 - root.x;
         }
+        originalRootX = root.x;
 
         // Normalize for fixed-depth.
-        var applyShift = function (shiftAmount) {
-            if (shiftAmount) {
-                // Apply the shift amount to the cache.
-                nodeCache.forEach(function (d) {
-                    d.x += shiftAmount;
-                });
-            }
-        };
         nodes.forEach(function (d) {
             var depth = d.depth,
                 inPath = !!d.children;
@@ -135,20 +143,22 @@ var Allagash = {
                 nodeCache = [];
                 pathFound = false;
                 lastDepth = depth;
+                totalShiftAmount = 0;
             }
 
             if (inPath) {
-                totalShiftAmount += pathMargin;
+                rootVerticalShift = d.x - originalRootX;
+                totalShiftAmount -= pathMargin + rootVerticalShift;
                 applyShift(totalShiftAmount);
                 pathFound = true;
             } else {
                 if (pathFound) {
-                    d.x -= pathMargin;
+                    d.x += pathMargin;
                 }
             }
             nodeCache.push(d);
 
-            d.x += xOffset;
+            d.x += xOffset - rootVerticalShift;
 
         });
 
@@ -190,14 +200,14 @@ var Allagash = {
         nodeEnter.append("svg:rect")
             .style('fill', '#B8D7FF')
             .attr("x", 8)
-            .attr("y", -7)
+            .attr("y", -10)
             .attr("rx", 10)
             .attr("ry", 10)
-            .attr("width", elementsize[1])
-            .attr("height", elementsize[0]);
+            .attr("width", elementsize[1] - 50)
+            .attr("height", elementsize[0] - 10);
 
         nodeEnter.append("svg:text")
-            .attr("x", 10)
+            .attr("x", 15)
             .attr("dy", ".35em")
             .text(function (d) {
                 return d.name;

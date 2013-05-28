@@ -12042,7 +12042,8 @@ d3 = function() {
     return children && (n = children.length) ? d3_layout_clusterRight(children[n - 1]) : node;
   }
   d3.layout.tree = function() {
-    var hierarchy = d3.layout.hierarchy().sort(null).value(null), separation = d3_layout_treeSeparation, elementsize = [ 1, 1 ], size = [ 1, 1 ];
+    var hierarchy = d3.layout.hierarchy().sort(null).value(null), separation = d3_layout_treeSeparation,
+        elementsize = [ 1, 1 ], size = [ 1, 1 ];
     function tree(d, i) {
       var nodes = hierarchy.call(this, d, i), root = nodes[0];
       function firstWalk(node, previousSibling) {
@@ -12124,8 +12125,8 @@ d3 = function() {
       secondWalk(root, -root._tree.prelim);
       var left = d3_layout_treeSearch(root, d3_layout_treeLeftmost), right = d3_layout_treeSearch(root, d3_layout_treeRightmost), deep = d3_layout_treeSearch(root, d3_layout_treeDeepest), x0 = left.x - separation(left, right) / 2, x1 = right.x + separation(right, left) / 2, y1 = deep.depth || 1;
       d3_layout_treeVisitAfter(root, function(node) {
-          // make sure size is null, we will make it null when we create the tree
-          if(size === undefined || size == null)
+          /* make sure size is null, we will make it null when we create the tree */
+          if (!size)
           {
               node.x = (node.x - x0) * elementsize[0];
               node.y = node.depth * elementsize[1];
