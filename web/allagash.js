@@ -18,7 +18,9 @@ var Allagash = {
     },
 
     go: function () {
-
+        if (this.vis) {
+            d3.selectAll('svg').remove();
+        }
         var _this = this, m = this.graphMargins;
 
         this.nodeIdGen = 0;

@@ -43,6 +43,11 @@
     </style>
 </head>
 <body>
+    <div id="root-selection">
+        <button value="previous"> Previous </button>
+        <button value="next"> Next </button>
+        <span id="current-node"></span>
+    </div>
     <div id="tooltip"></div>
     <div id="graph" style="width: 1280px; height: 800px">
     </div>
@@ -52,13 +57,31 @@
 
     var m = [20, 120, 20, 120],
         w = 1280 - m[1] - m[3],
-        h = 800 - m[0] - m[2];
-
+        h = 800 - m[0] - m[2],
+        rootId = 366,
+        currentNode = d3.select("#current-node");
     Allagash.neojsUrl = 'http://localhost:7474/';
-    Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/366';
+    Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
     Allagash.graphDimensions = [h, w];
     Allagash.graphMargins = m;
     Allagash.go();
+    currentNode.text(rootId);
+
+    d3.select('#root-selection')
+        .on('click', function () {
+            var page = d3.event.target.value;
+            if (page) {
+                if (page === 'previous') {
+                    rootId--;
+                } else if (page === 'next') {
+                    rootId++;
+                }
+                Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
+                Allagash.go();
+                currentNode.text(rootId);
+            }
+        });
+    
 
 </script>
 
