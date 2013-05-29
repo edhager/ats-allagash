@@ -139,7 +139,7 @@ var Allagash;
                 },
                 trans = source.children ? -source.y : (((source.depth || 1) - 1) * elementsize[1]);
 
-            this.zoomController.translate([trans, 0]);
+            this.zoomController.translate([trans, 0]).scale(1);
 
             // Compute the new tree layout.
             nodes = this.tree.nodes(this.root).reverse();
@@ -222,6 +222,9 @@ var Allagash;
                     self.tooltip.style('display', 'none');
                 });
 
+            nodeEnter.append("svg:circle")
+                .attr("r", 1e-6);
+
             nodeEnter.append("svg:rect")
                 .style('fill', 'lightsteelblue')
                 .attr("x", 8)
@@ -230,9 +233,6 @@ var Allagash;
                 .attr("ry", 10)
                 .attr("width", elementsize[1] - 50)
                 .attr("height", elementsize[0] - 10);
-
-            nodeEnter.append("svg:circle")
-                .attr("r", 1e-6);
 
             nodeEnter.append("svg:text")
                 .attr("x", 15)
