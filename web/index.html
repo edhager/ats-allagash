@@ -32,12 +32,15 @@
             position: absolute;
             pointer-events: none;
             text-align: center;
-            vertical-align: middle;
             background: lightgoldenrodyellow;
             border: 1px solid #888;
             border-radius: 8px;
-            height: 28px;
             padding: 2px;
+        }
+
+        #tooltip > span {
+            display: inline-block;
+            vertical-align: middle;
         }
 
     </style>
@@ -48,7 +51,9 @@
         <button value="next"> Next </button>
         <span id="current-node"></span>
     </div>
-    <div id="tooltip"></div>
+    <div id="tooltip">
+        <span></span>
+    </div>
     <div id="graph" style="width: 1280px; height: 800px"></div>
 
 <script type="text/javascript">
