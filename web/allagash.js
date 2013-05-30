@@ -208,11 +208,11 @@ var Allagash;
                 })
                 .on('mouseover', function (d) {
                     // show tooltip
-                    self.tooltip.text(d.name)
-                        .style('display', '');
+                    self.tooltip.style('display', '')
+                        .select('span').text(d.name);
                 })
                 .on('mousemove', function () {
-                    var top = d3.event.offsetY - 45,
+                    var top = d3.event.offsetY - 25,
                         left = d3.event.offsetX - 20,
                         dimensions = self.graphDimensions;
 
