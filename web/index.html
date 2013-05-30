@@ -71,12 +71,9 @@
         rootId = 366,
         currentNode = d3.select("#current-node");
 
-    // Use this URL to run with the mock data.
-//    Allagash.neojsUrl = 'http://localhost:8080/mocks/';
-    // Use this URL to run with the graph data in neo4j
-    Allagash.neojsUrl = 'http://localhost:7474/';
+    Allagash.apiUrl = 'http://localhost:8080/';
 
-    Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
+    Allagash.firstRequest = Allagash.apiUrl + 'db/data/node/' + rootId;
     Allagash.graphDimensions = [h, w];
     Allagash.graphMargins = m;
     Allagash.go(SlideTree);
@@ -91,7 +88,7 @@
                 } else if (page === 'next') {
                     rootId++;
                 }
-                Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
+                Allagash.firstRequest = Allagash.apiUrl + 'db/data/node/' + rootId;
                 Allagash.go();
                 currentNode.text(rootId);
             }
