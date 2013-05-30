@@ -1,0 +1,159 @@
+{
+    "outgoing_relationships": "/mocks/db/data/node/108208/relationships/out",
+    "labels": "/mocks/db/data/node/108208/labels",
+    "data": {
+        "nomenclature": "WRENCH,TORQUE",
+        "fsc": "5120",
+        "niin": "013966074"
+    },
+
+    "_labels": [
+        "StockItem"
+    ],
+
+    "_relationships": {
+        "_out": [
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76965",
+                "property": "/mocks/db/data/relationship/76965/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76965/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108210"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76963",
+                "property": "/mocks/db/data/relationship/76963/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76963/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108209"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76961",
+                "property": "/mocks/db/data/relationship/76961/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76961/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108208"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76959",
+                "property": "/mocks/db/data/relationship/76959/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76959/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108207"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76957",
+                "property": "/mocks/db/data/relationship/76957/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76957/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108206"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76956",
+                "property": "/mocks/db/data/relationship/76956/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76956/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108121"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76954",
+                "property": "/mocks/db/data/relationship/76954/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76954/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108205"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76952",
+                "property": "/mocks/db/data/relationship/76952/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76952/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108204"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76950",
+                "property": "/mocks/db/data/relationship/76950/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76950/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108203"
+            },
+            {
+                "start": "/mocks/db/data/node/366",
+                "data": {
+                    "mec": "1",
+                    "quantity": "1",
+                    "smr": "PAOZZ"
+                },
+                "self": "/mocks/db/data/relationship/76948",
+                "property": "/mocks/db/data/relationship/76948/properties/{key}",
+                "properties": "/mocks/db/data/relationship/76948/properties",
+                "type": "has",
+                "extensions": {},
+                "end": "/mocks/db/data/node/108202"
+            }
+
+        ]
+    }
+}
