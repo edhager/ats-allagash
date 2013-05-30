@@ -61,7 +61,7 @@ var SlideTree = (function () {
                 xOffset = 0, // remember, x and y are swapped.
                 lastDepth,
                 pathFound,
-                nodeCache = [],
+                nodeCache = [], trans = 0,
                 totalShiftAmount = 0,
                 pathMargin = this.pathMargin,
                 rootVerticalShift = 0,
@@ -75,9 +75,15 @@ var SlideTree = (function () {
                             d.x += shiftAmount;
                         });
                     }
-                },
-                trans = source.children ? -source.y : (((source.depth || 1) - 1) * elementsize[1]);
+                };
 
+            if (source.children) {
+                trans = -source.y;
+            } else {
+                if (source.parent) {
+                    trans = -source.parent.y;
+                }
+            }
             this.zoomController.translate([trans, 0]).scale(1);
 
             // Compute the new tree layout.
