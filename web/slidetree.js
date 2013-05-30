@@ -1,11 +1,13 @@
+/*global d3*/
 var SlideTree = (function () {
-
+    "use strict";
     return {
 
         initialize: function (source, config) {
             var self = this,
                 zoomController,
-                svg;
+                svg,
+                m;
 
             this.root = source;
             this.pathMargin = config.pathMargin;
