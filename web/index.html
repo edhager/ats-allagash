@@ -71,7 +71,11 @@
         rootId = 366,
         currentNode = d3.select("#current-node");
 
-    Allagash.neojsUrl = 'http://localhost:7474/';
+    // Use this URL to run with the mock data.
+    Allagash.neojsUrl = 'http://localhost:8080/mocks/';
+    // Use this URL to run with the graph data in neo4j
+//    Allagash.neojsUrl = 'http://localhost:7474/';
+
     Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
     Allagash.graphDimensions = [h, w];
     Allagash.graphMargins = m;
