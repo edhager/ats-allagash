@@ -238,48 +238,50 @@ var SlideTree = (function () {
             nodeExit.select("text")
                 .style("fill-opacity", 1e-6);
 
-            // Update the links…
-            linkSelection = this.linkSelection = this.vis.selectAll("path.link")
-                .data(this.tree.links(nodes), function (d) {
-                    return d.target.id;
-                });
+            if (!this.noLinesMode) {
+                // Update the links…
+                linkSelection = this.linkSelection = this.vis.selectAll("path.link")
+                    .data(this.tree.links(nodes), function (d) {
+                        return d.target.id;
+                    });
 
-            // Enter any new links at the parent's previous position.
-            linkSelection.enter().insert("svg:path", "g")
-                .attr("class", "link")
-                .attr("d", function () {
-                    var o = {x: self.xScale(source.x0), y: self.yScale(source.y0)};
-                    return self.diagonal({source: o, target: o});
-                })
-                .transition()
-                .duration(duration)
-                .attr("d", function (d) {
-                    var source = d.source,
-                        target = d.target;
-                    source = {x: self.xScale(source.x), y: self.yScale(source.y)};
-                    target = {x: self.xScale(target.x), y: self.yScale(target.y)};
-                    return self.diagonal({source: source, target: target});
-                });
+                // Enter any new links at the parent's previous position.
+                linkSelection.enter().insert("svg:path", "g")
+                    .attr("class", "link")
+                    .attr("d", function () {
+                        var o = {x: self.xScale(source.x0), y: self.yScale(source.y0)};
+                        return self.diagonal({source: o, target: o});
+                    })
+                    .transition()
+                    .duration(duration)
+                    .attr("d", function (d) {
+                        var source = d.source,
+                            target = d.target;
+                        source = {x: self.xScale(source.x), y: self.yScale(source.y)};
+                        target = {x: self.xScale(target.x), y: self.yScale(target.y)};
+                        return self.diagonal({source: source, target: target});
+                    });
 
-            // Transition links to their new position.
-            linkSelection.transition()
-                .duration(duration)
-                .attr("d", function (d) {
-                    var source = d.source,
-                        target = d.target;
-                    source = {x: self.xScale(source.x), y: self.yScale(source.y)};
-                    target = {x: self.xScale(target.x), y: self.yScale(target.y)};
-                    return self.diagonal({source: source, target: target});
-                });
+                // Transition links to their new position.
+                linkSelection.transition()
+                    .duration(duration)
+                    .attr("d", function (d) {
+                        var source = d.source,
+                            target = d.target;
+                        source = {x: self.xScale(source.x), y: self.yScale(source.y)};
+                        target = {x: self.xScale(target.x), y: self.yScale(target.y)};
+                        return self.diagonal({source: source, target: target});
+                    });
 
-            // Transition exiting nodes to the parent's new position.
-            linkSelection.exit().transition()
-                .duration(duration)
-                .attr("d", function () {
-                    var o = {x: self.xScale(source.x), y: self.yScale(source.y)};
-                    return self.diagonal({source: o, target: o});
-                })
-                .remove();
+                // Transition exiting nodes to the parent's new position.
+                linkSelection.exit().transition()
+                    .duration(duration)
+                    .attr("d", function () {
+                        var o = {x: self.xScale(source.x), y: self.yScale(source.y)};
+                        return self.diagonal({source: o, target: o});
+                    })
+                    .remove();
+            }
 
             // Stash the old positions for transition.
             nodes.forEach(function (d) {
