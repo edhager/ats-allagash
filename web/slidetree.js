@@ -67,11 +67,10 @@ var SlideTree = (function () {
                 rootVerticalShift = 0,
                 elementsize = self.tree.elementsize(),
                 nodes,
-                originalRootX,
-                applyShift = function (shiftAmount) {
+                applyShift = function (nodes, shiftAmount) {
                     if (shiftAmount) {
                         // Apply the shift amount to the cache.
-                        nodeCache.forEach(function (d) {
+                        nodes.forEach(function (d) {
                             d.x += shiftAmount;
                         });
                     }
@@ -98,18 +97,12 @@ var SlideTree = (function () {
                 return result;
             });
 
-            if (root.x > 700 || root.x < 100) {
-                xOffset = 400 - root.x;
-            }
-            originalRootX = root.x;
-
-            // Normalize for fixed-depth.
             nodes.forEach(function (d) {
                 var depth = d.depth,
                     inPath = !!d.children;
 
                 if (depth !== lastDepth) {
-                    applyShift(rootVerticalShift);
+                    applyShift(nodeCache, rootVerticalShift);
                     nodeCache = [];
                     pathFound = false;
                     lastDepth = depth;
@@ -117,9 +110,9 @@ var SlideTree = (function () {
                 }
 
                 if (inPath) {
-                    rootVerticalShift = (originalRootX - d.x);
+                    rootVerticalShift = (root.x - d.x);
                     totalShiftAmount -= pathMargin;
-                    applyShift(totalShiftAmount);
+                    applyShift(nodeCache, totalShiftAmount);
                     pathFound = true;
                 } else {
                     if (pathFound) {
@@ -127,12 +120,12 @@ var SlideTree = (function () {
                     }
                 }
                 nodeCache.push(d);
-
-                d.x += xOffset;
-
             });
 
-            applyShift(rootVerticalShift);
+            applyShift(nodeCache, rootVerticalShift);
+
+            xOffset = 200 - root.x;
+            applyShift(nodes, xOffset);
 
             // Update the nodes…
             nodeSelection = this.nodeSelection = this.vis.selectAll("g.node")
