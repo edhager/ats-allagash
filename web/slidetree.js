@@ -103,6 +103,7 @@ var SlideTree = (function () {
                     inPath = !!d.children;
 
                 if (depth !== lastDepth) {
+                    applyShift(rootVerticalShift);
                     nodeCache = [];
                     pathFound = false;
                     lastDepth = depth;
@@ -110,8 +111,8 @@ var SlideTree = (function () {
                 }
 
                 if (inPath) {
-                    rootVerticalShift = d.x - originalRootX;
-                    totalShiftAmount -= pathMargin + rootVerticalShift;
+                    rootVerticalShift = (originalRootX - d.x);
+                    totalShiftAmount -= pathMargin;
                     applyShift(totalShiftAmount);
                     pathFound = true;
                 } else {
@@ -121,9 +122,11 @@ var SlideTree = (function () {
                 }
                 nodeCache.push(d);
 
-                d.x += xOffset - rootVerticalShift;
+                d.x += xOffset;
 
             });
+
+            applyShift(rootVerticalShift);
 
             // Update the nodes…
             nodeSelection = this.nodeSelection = this.vis.selectAll("g.node")
