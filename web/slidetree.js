@@ -124,7 +124,7 @@ var SlideTree = (function () {
 
             applyShift(nodeCache, rootVerticalShift);
 
-            xOffset = 200 - root.x;
+            xOffset = 300 - root.x;
             applyShift(nodes, xOffset);
 
             // Update the nodes…
