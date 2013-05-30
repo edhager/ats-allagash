@@ -79,6 +79,7 @@
             url = require('url'),
             staticRoot = __dirname + '/web',
             port = 8080,
+            neo4jPort = 7474,
             useMocks = mocksConfigured(),
             proxy = new httpProxy.RoutingProxy();
 
@@ -93,13 +94,11 @@
             path = url.parse(req.url).pathname;
             if (path.indexOf('/db') === 0) {
                 if (useMocks) {
-                    console.log('Processing mock request: ' + path);
                     buildMock(res, path, error);
                 } else {
-                    console.log('Processing data request: ' + path);
                     proxy.proxyRequest(req, res, {
                         host: 'localhost',
-                        port: 7474
+                        port: neo4jPort
                     });
                 }
             } else {
@@ -110,6 +109,7 @@
             }
         }).listen(port);
 
+        console.log(useMocks ? 'Mock data will be used.' : 'Live data will be retrieved from http://localhost:' + neo4jPort);
         console.log('Allagash at http://localhost:' + port);
     }
 
