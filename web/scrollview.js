@@ -41,6 +41,7 @@ var ScrollView = (function () {
             node = nodes[i];
             option = option.cloneNode();
             option.innerText = node.name;
+            option.setAttribute('title', node.name);
             option.__data__ = node;
             select.appendChild(option);
         }
