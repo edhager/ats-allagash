@@ -52,7 +52,7 @@ var ScrollView = (function () {
             })
             .remove();
 
-        dispatch.toggle(option.__data__);
+        dispatch.loadChildren(option.__data__, update);
     }
 
     function searchInputHandler(e) {
@@ -65,10 +65,17 @@ var ScrollView = (function () {
         }
     }
 
+    function update(source) {
+        if (source.children) {
+            vis.node().appendChild(createScrollContainer(source.children));
+        } else {
+            var depth = source.depth;
+            // remove child scroll containers
+        }
+    }
+
     return {
         initialize: function (source, config) {
-            var self = this;
-
             currentDepth = 0;
             root = source;
             pathMargin = config.pathMargin;
@@ -81,13 +88,6 @@ var ScrollView = (function () {
             vis.node().appendChild(createScrollContainer([source]));
         },
 
-        update: function (source) {
-            if (source.children) {
-                vis.node().appendChild(createScrollContainer(source.children));
-            } else {
-                var depth = source.depth;
-                // remove child scroll containers
-            }
-        }
+        update: update
     };
 }());

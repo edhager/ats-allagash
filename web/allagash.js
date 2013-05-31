@@ -42,8 +42,8 @@ var Allagash = (function () {
             // clean up old vis
             d3.selectAll('svg').remove();
 
-            dispatch = d3.dispatch('toggle');
-            dispatch.on('toggle', this.toggle.bind(this));
+            dispatch = d3.dispatch('loadChildren');
+            dispatch.on('loadChildren', this.loadChildren.bind(this));
 
             this.loadNode(this.firstRequest, function (node) {
                 self.root = node;
@@ -67,29 +67,6 @@ var Allagash = (function () {
                     });
                 }
             });
-        },
-
-        /**
-         * Shows/hide the children of a give node.  Calls update.
-         * @param node
-         */
-        toggle: function (node) {
-            var view = this.view;
-            if (node.children) {
-                node.hiddenChildren = node.children;
-                delete node.children;
-                view.update(node);
-            } else {
-                if (node.hiddenChildren) {
-                    node.children = node.hiddenChildren;
-                    delete node.hiddenChildren;
-                    view.update(node);
-                } else {
-                    this.loadChildren(node, function (node) {
-                        view.update(node);
-                    });
-                }
-            }
         },
 
         loadChildren: function (node, callback) {

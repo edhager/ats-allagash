@@ -157,7 +157,7 @@ var SlideTree = (function () {
                 })
                 .on("click", function (d) {
                     self.collapseSiblings(d);
-                    dispatch.toggle(d);
+                    self.toggle(d);
                 })
                 .on('mouseover', function (d) {
                     // show tooltip
@@ -316,13 +316,37 @@ var SlideTree = (function () {
             });
         },
 
+        /**
+         * Shows/hide the children of a give node.  Calls update.
+         * @param node
+         */
+        toggle: function (node) {
+            var self = this;
+            if (node.children) {
+                node.hiddenChildren = node.children;
+                delete node.children;
+                self.update(node);
+            } else {
+                if (node.hiddenChildren) {
+                    node.children = node.hiddenChildren;
+                    delete node.hiddenChildren;
+                    self.update(node);
+                } else {
+                    dispatch.loadChildren(node, function (node) {
+                        self.update(node);
+                    });
+                }
+            }
+        },
+
         collapseSiblings: function (node) {
+            var self = this;
             if (node.parent) {
                 nodes = node.parent.children;
                 if (nodes) {
                     nodes.forEach(function (d) {
                         if (d.id !== node.id && d.children) {
-                            dispatch.toggle(d);
+                            self.toggle(d);
                         }
                     });
                 }
