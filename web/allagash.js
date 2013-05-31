@@ -36,11 +36,15 @@ var Allagash = (function () {
         },
 
         go: function (view) {
-            var self = this, m = this.graphMargins, dispatch;
+            var self = this, m = this.graphMargins, dispatch,
+                graph;
             this.view = view;
 
             // clean up old vis
-            d3.selectAll('svg').remove();
+            graph = document.getElementById('graph');
+            while (graph.lastChild) {
+                graph.removeChild(graph.lastChild);
+            }
 
             dispatch = d3.dispatch('loadChildren');
             dispatch.on('loadChildren', this.loadChildren.bind(this));
