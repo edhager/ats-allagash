@@ -75,6 +75,10 @@ var Allagash = (function () {
 
         loadChildren: function (node, callback) {
             var self = this;
+            if (node.childrenLoaded) {
+                callback(node);
+                return;
+            }
             if (!node.children) {
                 node.children = [];
             }

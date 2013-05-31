@@ -51,21 +51,23 @@ var ScrollView = (function () {
     function selectionChangeHandler(e, pruneDepth) {
         var target = e.target,
             option = target.options[target.selectedIndex],
-            prunedCount = 0;
+            prunedCount = 0,
+            nodeExit;
         if (option) {
             vis = vis || d3.select('#graph');
             // collapse siblings.
-            vis.selectAll('div.scrollcontainer')
+            nodeExit = vis.selectAll('div.scrollcontainer')
                 .filter(function () {
                     if (+this.dataset.depth > +pruneDepth) {
                         prunedCount++;
                         return true;
                     }
-                })
-                .remove();
-
+                });
             currentDepth -= prunedCount;
-            dispatch.loadChildren(option.__data__, update);
+            dispatch.loadChildren(option.__data__, function (node) {
+                nodeExit.remove();
+                update(node);
+            });
         }
     }
 
@@ -89,8 +91,6 @@ var ScrollView = (function () {
         updateBreadcrumb(source);
         if (source.children) {
             vis.node().appendChild(createScrollContainer(source.children));
-        } else {
-            // remove child scroll containers
         }
     }
 
