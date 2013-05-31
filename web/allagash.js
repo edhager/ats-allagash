@@ -1,9 +1,7 @@
 /*global d3*/
-var Allagash;
-
-(function () {
+var Allagash = (function () {
     "use strict";
-    Allagash = {
+    return {
 
         // The amount of whitespace above and below nodes that have children showing.
         pathMargin: 35,
@@ -38,13 +36,13 @@ var Allagash;
         },
 
         go: function (view) {
-            var self = this, m = this.graphMargins;
+            var self = this, m = this.graphMargins, dispatch;
             this.view = view;
 
             // clean up old vis
             d3.selectAll('svg').remove();
 
-            var dispatch = d3.dispatch('toggle');
+            dispatch = d3.dispatch('toggle');
             dispatch.on('toggle', this.toggle.bind(this));
 
             this.loadNode(this.firstRequest, function (node) {
@@ -76,8 +74,7 @@ var Allagash;
          * @param node
          */
         toggle: function (node) {
-            var self = this,
-                view = this.view;
+            var view = this.view;
             if (node.children) {
                 node.hiddenChildren = node.children;
                 delete node.children;

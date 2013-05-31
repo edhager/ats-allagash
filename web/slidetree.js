@@ -1,4 +1,6 @@
+/*global d3*/
 var SlideTree = (function () {
+    "use strict";
 
     var root,
         pathMargin,
@@ -14,9 +16,9 @@ var SlideTree = (function () {
         nodeSelection,
         linkSelection,
         diagonal = d3.svg.diagonal()
-            .projection(function (d) {
-                return [d.y, d.x];
-            });
+                .projection(function (d) {
+                    return [d.y, d.x];
+                });
 
     return {
 
@@ -71,22 +73,27 @@ var SlideTree = (function () {
                 xOffset = 0, // remember, x and y are swapped.
                 lastDepth,
                 pathFound,
-                nodeCache = [],
+                nodeCache = [], trans = 0,
                 totalShiftAmount = 0,
                 rootVerticalShift = 0,
                 elementsize = tree.elementsize(),
                 nodes,
-                originalRootX,
-                applyShift = function (shiftAmount) {
+                applyShift = function (nodes, shiftAmount) {
                     if (shiftAmount) {
                         // Apply the shift amount to the cache.
-                        nodeCache.forEach(function (d) {
+                        nodes.forEach(function (d) {
                             d.x += shiftAmount;
                         });
                     }
-                },
-                trans = source.children ? -source.y : (((source.depth || 1) - 1) * elementsize[1]);
+                };
 
+            if (source.children) {
+                trans = -source.y;
+            } else {
+                if (source.parent) {
+                    trans = -source.parent.y;
+                }
+            }
             zoomController.translate([trans, 0]).scale(1);
 
             // Compute the new tree layout.
@@ -101,17 +108,12 @@ var SlideTree = (function () {
                 return result;
             });
 
-            if (root.x > 700 || root.x < 100) {
-                xOffset = 400 - root.x;
-            }
-            originalRootX = root.x;
-
-            // Normalize for fixed-depth.
             nodes.forEach(function (d) {
                 var depth = d.depth,
                     inPath = !!d.children;
 
                 if (depth !== lastDepth) {
+                    applyShift(nodeCache, rootVerticalShift);
                     nodeCache = [];
                     pathFound = false;
                     lastDepth = depth;
@@ -119,9 +121,9 @@ var SlideTree = (function () {
                 }
 
                 if (inPath) {
-                    rootVerticalShift = d.x - originalRootX;
-                    totalShiftAmount -= pathMargin + rootVerticalShift;
-                    applyShift(totalShiftAmount);
+                    rootVerticalShift = (root.x - d.x);
+                    totalShiftAmount -= pathMargin;
+                    applyShift(nodeCache, totalShiftAmount);
                     pathFound = true;
                 } else {
                     if (pathFound) {
@@ -129,10 +131,12 @@ var SlideTree = (function () {
                     }
                 }
                 nodeCache.push(d);
-
-                d.x += xOffset - rootVerticalShift;
-
             });
+
+            applyShift(nodeCache, rootVerticalShift);
+
+            xOffset = 300 - root.x;
+            applyShift(nodes, xOffset);
 
             // Update the nodes…
             nodeSelection = vis.selectAll("g.node")
@@ -244,48 +248,50 @@ var SlideTree = (function () {
             nodeExit.select("text")
                 .style("fill-opacity", 1e-6);
 
-            // Update the links…
-            linkSelection = vis.selectAll("path.link")
-                .data(tree.links(nodes), function (d) {
-                    return d.target.id;
-                });
+            if (!this.noLinesMode) {
+                // Update the links…
+                linkSelection = vis.selectAll("path.link")
+                    .data(tree.links(nodes), function (d) {
+                        return d.target.id;
+                    });
 
-            // Enter any new links at the parent's previous position.
-            linkSelection.enter().insert("svg:path", "g")
-                .attr("class", "link")
-                .attr("d", function () {
-                    var o = {x: xScale(source.x0), y: yScale(source.y0)};
-                    return diagonal({source: o, target: o});
-                })
-                .transition()
-                .duration(duration)
-                .attr("d", function (d) {
-                    var source = d.source,
-                        target = d.target;
-                    source = {x: xScale(source.x), y: yScale(source.y)};
-                    target = {x: xScale(target.x), y: yScale(target.y)};
-                    return diagonal({source: source, target: target});
-                });
+                // Enter any new links at the parent's previous position.
+                linkSelection.enter().insert("svg:path", "g")
+                    .attr("class", "link")
+                    .attr("d", function () {
+                        var o = {x: xScale(source.x0), y: yScale(source.y0)};
+                        return diagonal({source: o, target: o});
+                    })
+                    .transition()
+                    .duration(duration)
+                    .attr("d", function (d) {
+                        var source = d.source,
+                            target = d.target;
+                        source = {x: xScale(source.x), y: yScale(source.y)};
+                        target = {x: xScale(target.x), y: yScale(target.y)};
+                        return diagonal({source: source, target: target});
+                    });
 
-            // Transition links to their new position.
-            linkSelection.transition()
-                .duration(duration)
-                .attr("d", function (d) {
-                    var source = d.source,
-                        target = d.target;
-                    source = {x: xScale(source.x), y: yScale(source.y)};
-                    target = {x: xScale(target.x), y: yScale(target.y)};
-                    return diagonal({source: source, target: target});
-                });
+                // Transition links to their new position.
+                linkSelection.transition()
+                    .duration(duration)
+                    .attr("d", function (d) {
+                        var source = d.source,
+                            target = d.target;
+                        source = {x: xScale(source.x), y: yScale(source.y)};
+                        target = {x: xScale(target.x), y: yScale(target.y)};
+                        return diagonal({source: source, target: target});
+                    });
 
-            // Transition exiting nodes to the parent's new position.
-            linkSelection.exit().transition()
-                .duration(duration)
-                .attr("d", function () {
-                    var o = {x: xScale(source.x), y: yScale(source.y)};
-                    return diagonal({source: o, target: o});
-                })
-                .remove();
+                // Transition exiting nodes to the parent's new position.
+                linkSelection.exit().transition()
+                    .duration(duration)
+                    .attr("d", function () {
+                        var o = {x: xScale(source.x), y: yScale(source.y)};
+                        return diagonal({source: o, target: o});
+                    })
+                    .remove();
+            }
 
             // Stash the old positions for transition.
             nodes.forEach(function (d) {

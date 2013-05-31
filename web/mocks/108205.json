@@ -1,6 +1,6 @@
 {
-    "outgoing_relationships": "/mocks/db/data/node/108205/relationships/out",
-    "labels": "/mocks/db/data/node/108205/labels",
+    "outgoing_relationships": "/db/data/node/108205/relationships/out",
+    "labels": "/db/data/node/108205/labels",
     "data": {
         "nomenclature": "WRENCH,OPEN END",
         "fsc": "5120",
@@ -14,144 +14,144 @@
     "_relationships": {
         "_out": [
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76965",
-                "property": "/mocks/db/data/relationship/76965/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76965/properties",
+                "self": "/db/data/relationship/76965",
+                "property": "/db/data/relationship/76965/properties/{key}",
+                "properties": "/db/data/relationship/76965/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108210"
+                "end": "/db/data/node/108210"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76963",
-                "property": "/mocks/db/data/relationship/76963/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76963/properties",
+                "self": "/db/data/relationship/76963",
+                "property": "/db/data/relationship/76963/properties/{key}",
+                "properties": "/db/data/relationship/76963/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108209"
+                "end": "/db/data/node/108209"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76961",
-                "property": "/mocks/db/data/relationship/76961/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76961/properties",
+                "self": "/db/data/relationship/76961",
+                "property": "/db/data/relationship/76961/properties/{key}",
+                "properties": "/db/data/relationship/76961/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108208"
+                "end": "/db/data/node/108208"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76959",
-                "property": "/mocks/db/data/relationship/76959/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76959/properties",
+                "self": "/db/data/relationship/76959",
+                "property": "/db/data/relationship/76959/properties/{key}",
+                "properties": "/db/data/relationship/76959/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108207"
+                "end": "/db/data/node/108207"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76957",
-                "property": "/mocks/db/data/relationship/76957/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76957/properties",
+                "self": "/db/data/relationship/76957",
+                "property": "/db/data/relationship/76957/properties/{key}",
+                "properties": "/db/data/relationship/76957/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108206"
+                "end": "/db/data/node/108206"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76956",
-                "property": "/mocks/db/data/relationship/76956/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76956/properties",
+                "self": "/db/data/relationship/76956",
+                "property": "/db/data/relationship/76956/properties/{key}",
+                "properties": "/db/data/relationship/76956/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108121"
+                "end": "/db/data/node/108121"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76954",
-                "property": "/mocks/db/data/relationship/76954/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76954/properties",
+                "self": "/db/data/relationship/76954",
+                "property": "/db/data/relationship/76954/properties/{key}",
+                "properties": "/db/data/relationship/76954/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108205"
+                "end": "/db/data/node/108205"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76952",
-                "property": "/mocks/db/data/relationship/76952/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76952/properties",
+                "self": "/db/data/relationship/76952",
+                "property": "/db/data/relationship/76952/properties/{key}",
+                "properties": "/db/data/relationship/76952/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108204"
+                "end": "/db/data/node/108204"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76950",
-                "property": "/mocks/db/data/relationship/76950/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76950/properties",
+                "self": "/db/data/relationship/76950",
+                "property": "/db/data/relationship/76950/properties/{key}",
+                "properties": "/db/data/relationship/76950/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108203"
+                "end": "/db/data/node/108203"
             },
             {
-                "start": "/mocks/db/data/node/366",
+                "start": "/db/data/node/366",
                 "data": {
                     "mec": "1",
                     "quantity": "1",
                     "smr": "PAOZZ"
                 },
-                "self": "/mocks/db/data/relationship/76948",
-                "property": "/mocks/db/data/relationship/76948/properties/{key}",
-                "properties": "/mocks/db/data/relationship/76948/properties",
+                "self": "/db/data/relationship/76948",
+                "property": "/db/data/relationship/76948/properties/{key}",
+                "properties": "/db/data/relationship/76948/properties",
                 "type": "has",
                 "extensions": {},
-                "end": "/mocks/db/data/node/108202"
+                "end": "/db/data/node/108202"
             }
 
         ]

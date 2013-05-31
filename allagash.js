@@ -53,20 +53,35 @@
         var parts = path.substring(1).split('/'),
             nodeId;
 
-        if (parts[0] === 'mocks' && parts[1] === 'db' && parts[2] === 'data' && parts[3] === 'node') {
-            buildNodeData(res, errorFn, parts[4], parts.slice(5));
+        if (parts[0] === 'db' && parts[1] === 'data' && parts[2] === 'node') {
+            buildNodeData(res, errorFn, parts[3], parts.slice(4));
 
         } else {
             errorFn({ status: 500, message: 'Not a valid mock data url.'});
         }
     }
 
+    function mocksConfigured() {
+        var useMocks;
+        process.argv.some(function (val) {
+            if (val === 'useMocks') {
+                useMocks = true;
+                return true;
+            }
+        });
+        return useMocks;
+    }
+
     function initServer() {
         var send = require('send'),
             http = require('http'),
+            httpProxy = require('http-proxy'),
             url = require('url'),
             staticRoot = __dirname + '/web',
-            port = 8080;
+            port = 8080,
+            neo4jPort = 7474,
+            useMocks = mocksConfigured(),
+            proxy = new httpProxy.RoutingProxy();
 
         http.createServer(function (req, res) {
             var path;
@@ -77,9 +92,15 @@
             }
 
             path = url.parse(req.url).pathname;
-            if (path.indexOf('/mocks') === 0) {
-                console.log('Processing mock request: ' + path);
-                buildMock(res, path, error);
+            if (path.indexOf('/db') === 0) {
+                if (useMocks) {
+                    buildMock(res, path, error);
+                } else {
+                    proxy.proxyRequest(req, res, {
+                        host: 'localhost',
+                        port: neo4jPort
+                    });
+                }
             } else {
                 send(req, url.parse(req.url).pathname)
                     .root(staticRoot)
@@ -88,6 +109,7 @@
             }
         }).listen(port);
 
+        console.log(useMocks ? 'Mock data will be used.' : 'Live data will be retrieved from http://localhost:' + neo4jPort);
         console.log('Allagash at http://localhost:' + port);
     }
 
