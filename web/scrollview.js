@@ -23,10 +23,14 @@ var ScrollView = (function () {
 
         _selectionChangeHandler = function (e) {
             selectionChangeHandler(e, container.dataset.depth);
-        }
+        };
+
+        _searchInputHandler = function (e) {
+            searchInputHandler(e, select);
+        };
 
         searchBox.setAttribute('type', 'text');
-        searchBox.addEventListener('keyup', searchInputHandler);
+        searchBox.addEventListener('keyup', _searchInputHandler);
 
         select.setAttribute('multiple', 'true');
         select.addEventListener('change', _selectionChangeHandler);
@@ -55,13 +59,19 @@ var ScrollView = (function () {
         dispatch.loadChildren(option.__data__, update);
     }
 
-    function searchInputHandler(e) {
+    function searchInputHandler(e, select) {
         // filter scroll container
         var options = select.options,
-        option,
-        i;
-        for (i = 0; i < options; i++) {
-            // TODO                             
+            option,
+            str = e.target.value,
+            i;
+        for (i = 0; i < options.length; i++) {
+            option = options[i];
+            if (option.innerText.indexOf(str) < 0) {
+                option.setAttribute('disabled', 'true');
+            } else {
+                option.removeAttribute('disabled');
+            }
         }
     }
 
@@ -83,9 +93,8 @@ var ScrollView = (function () {
             dispatch = config.dispatch;
             m = config.graphMargins;
 
-
-            var vis = d3.select('#graph');
-            vis.node().appendChild(createScrollContainer([source]));
+            var vis = document.getElementById('graph');
+            vis.appendChild(createScrollContainer([source]));
         },
 
         update: update
