@@ -4,6 +4,8 @@ var ScrollView = (function () {
         root,
         graphDimensions,
         pathMargin,
+        breadcrumb,
+        breadcrumbArray,
         currentDepth;
 
 
@@ -47,16 +49,23 @@ var ScrollView = (function () {
 
     function selectionChangeHandler(e, pruneDepth) {
         var target = e.target,
-            option = target.options[target.selectedIndex];
-        vis = vis || d3.select('#graph');
-        // collapse siblings.
-        vis.selectAll('div.scrollcontainer')
-            .filter(function () {
-                return +this.dataset.depth > +pruneDepth;
-            })
-            .remove();
+            option = target.options[target.selectedIndex],
+            prunedCount = 0;
+        if (option) {
+            vis = vis || d3.select('#graph');
+            // collapse siblings.
+            vis.selectAll('div.scrollcontainer')
+                .filter(function () {
+                    if (+this.dataset.depth > +pruneDepth) {
+                        prunedCount++;
+                        return true;
+                    }
+                })
+                .remove();
 
-        dispatch.loadChildren(option.__data__, update);
+            currentDepth -= prunedCount;
+            dispatch.loadChildren(option.__data__, update);
+        }
     }
 
     function searchInputHandler(e, select) {
@@ -76,24 +85,45 @@ var ScrollView = (function () {
     }
 
     function update(source) {
+        updateBreadcrumb(source);
         if (source.children) {
             vis.node().appendChild(createScrollContainer(source.children));
         } else {
-            var depth = source.depth;
             // remove child scroll containers
         }
     }
 
+    function updateBreadcrumb(node) {
+        var breadcrumbStr,
+            index = currentDepth - 1;
+        if (index >= 0) {
+            breadcrumbArray.splice(index, breadcrumbArray.length, node);
+        } else {
+            breadcrumbArray.push(node);
+        }
+
+        breadcrumbStr = breadcrumbArray.map(function (d) {
+            return d.name;
+        }).join(' > ');
+        breadcrumb.innerText = breadcrumbStr;
+    }
+
+
     return {
         initialize: function (source, config) {
+            var vis = document.getElementById('graph');
+
             currentDepth = 0;
+            breadcrumbArray = [];
             root = source;
             pathMargin = config.pathMargin;
             graphDimensions = config.graphDimensions;
             dispatch = config.dispatch;
             m = config.graphMargins;
+            breadcrumb = document.createElement('div');
+            breadcrumb.classList.add('breadcrumb');
 
-            var vis = document.getElementById('graph');
+            vis.appendChild(breadcrumb);
             vis.appendChild(createScrollContainer([source]));
         },
 
