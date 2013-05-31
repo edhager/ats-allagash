@@ -7,10 +7,12 @@
     <!--[if gte IE 9]><!--><script src="lib/d3-ats.js" type="text/javascript" charset="UTF-8"></script><!--<![endif]-->
 
     <script src="slidetree.js" type="text/javascript"></script>
+    <script src="scrollview.js" type="text/javascript"></script>
     <script src="allagash.js" type="text/javascript"></script>
 
     <style type="text/css">
 
+        /* Slide Tree */
         .node circle {
             cursor: pointer;
             fill: #fff;
@@ -44,6 +46,8 @@
             vertical-align: middle;
         }
 
+        /* Scroll view */
+
     </style>
 </head>
 <body>
@@ -55,6 +59,7 @@
     <div id="view-selection">
         <select>
             <option value="slidetree">Slide Tree</option>
+            <option value="scrollview">Scroll View</option>
         </select>
     </div>
     <div id="tooltip">
@@ -69,7 +74,11 @@
         w = 1400 - m[1] - m[3],
         h = 800 - m[0] - m[2],
         rootId = 366,
-        currentNode = d3.select("#current-node");
+        currentNode = d3.select("#current-node"),
+        viewMap = {
+            scrollview: ScrollView,
+            slidetree: SlideTree
+        };
 
     // Use this URL to run with the mock data.
     Allagash.neojsUrl = 'http://localhost:8080/mocks/';
@@ -92,14 +101,15 @@
                     rootId++;
                 }
                 Allagash.firstRequest = Allagash.neojsUrl + 'db/data/node/' + rootId;
-                Allagash.go();
+                Allagash.go(SlideTree);
                 currentNode.text(rootId);
             }
         });
 
     d3.select('#view-selection')
         .on('change', function () {
-
+            var view = viewMap[d3.event.target.value];
+            Allagash.go(view);
         });
 
 </script>
