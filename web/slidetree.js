@@ -13,6 +13,7 @@ var SlideTree = (function () {
         tree,
         tooltip,
         nodeIdGen,
+        nodes,
         nodeSelection,
         linkSelection,
         diagonal = d3.svg.diagonal()
