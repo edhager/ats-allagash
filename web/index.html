@@ -55,7 +55,7 @@
 
         /* scroll view */
         div.scrollcontainer {
-            display: inline-block;
+            float: left;
             padding-left: 15px;
         }
 
@@ -65,15 +65,25 @@
             width: 196px;
         }
 
-        div.scrollcontainer select {
+        div.scrollcontainer div.select {
             border-radius: 8px;
             height: 300px;
             width: 200px;
             border: 1px solid #888;
+            overflow-y: scroll;
         }
 
-        div.scrollcontainer select option[disabled="true"] {
-            color: #CCC;
+        div.scrollcontainer div.option {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        div.scrollcontainer div.option.selected {
+            background-color: lightsteelblue;
+        }
+
+        div.scrollcontainer div.option.hidden {
+            display: none;
         }
 
         div.breadcrumb {

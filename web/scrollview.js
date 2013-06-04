@@ -11,11 +11,12 @@ var ScrollView = (function () {
 
     function createScrollContainer(nodes) {
         var container = document.createElement('div'),
-            select = document.createElement('select'),
-            option = document.createElement('option'),
+            select = document.createElement('div'),
+            option = document.createElement('div'),
             searchBox = document.createElement('input'),
             node,
             _selectionChangeHandler,
+            _searchInputHandler,
             i;
         
         container.appendChild(searchBox);
@@ -24,7 +25,7 @@ var ScrollView = (function () {
         container.dataset.depth = currentDepth++;
 
         _selectionChangeHandler = function (e) {
-            selectionChangeHandler(e, container.dataset.depth);
+            selectionChangeHandler(e, select, container.dataset.depth);
         };
 
         _searchInputHandler = function (e) {
@@ -34,8 +35,10 @@ var ScrollView = (function () {
         searchBox.setAttribute('type', 'text');
         searchBox.addEventListener('keyup', _searchInputHandler);
 
-        select.setAttribute('multiple', 'true');
-        select.addEventListener('change', _selectionChangeHandler);
+        select.addEventListener('click', _selectionChangeHandler);
+        select.classList.add('select');
+
+        option.classList.add('option');
 
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -43,19 +46,29 @@ var ScrollView = (function () {
             option.innerText = node.name;
             option.setAttribute('title', node.name);
             option.__data__ = node;
+            option.dataset.index = i;
             select.appendChild(option);
         }
         return container;
     }
 
-    function selectionChangeHandler(e, pruneDepth) {
+    function selectionChangeHandler(e, select, pruneDepth) {
         var target = e.target,
-            option = target.options[target.selectedIndex],
+            selectionIndex = target.dataset.index,
             prunedCount = 0,
-            nodeExit;
-        if (option) {
-            vis = vis || d3.select('#graph');
-            // collapse siblings.
+            oldSelection,
+            nodeExit,
+            i;
+        if (select.dataset.selectedIndex !== selectionIndex) {
+            // new selection
+            select.dataset.selectedIndex = selectionIndex;
+            oldSelection = select.querySelectorAll('.selected');
+            for (i = 0; i < oldSelection.length; i++) {
+                oldSelection[i].classList.remove('selected');
+            }
+
+            target.classList.add('selected');
+
             nodeExit = vis.selectAll('div.scrollcontainer')
                 .filter(function () {
                     if (+this.dataset.depth > +pruneDepth) {
@@ -64,7 +77,7 @@ var ScrollView = (function () {
                     }
                 });
             currentDepth -= prunedCount;
-            dispatch.loadChildren(option.__data__, function (node) {
+            dispatch.loadChildren(target.__data__, function (node) {
                 nodeExit.remove();
                 update(node);
             });
@@ -73,16 +86,16 @@ var ScrollView = (function () {
 
     function searchInputHandler(e, select) {
         // filter scroll container
-        var options = select.options,
+        var options = select.children,
             option,
-            str = e.target.value,
+            str = e.target.value.toLowerCase(),
             i;
         for (i = 0; i < options.length; i++) {
             option = options[i];
-            if (option.innerText.indexOf(str) < 0) {
-                option.setAttribute('disabled', 'true');
+            if (option.innerText.toLowerCase().indexOf(str) < 0) {
+                option.classList.add('hidden');
             } else {
-                option.removeAttribute('disabled');
+                option.classList.remove('hidden');
             }
         }
     }
@@ -109,25 +122,27 @@ var ScrollView = (function () {
         breadcrumb.innerText = breadcrumbStr;
     }
 
+    function initialize(source, config) {
+        var container;
+        vis = d3.select('#graph');
+        container = vis.node();
+
+        currentDepth = 0;
+        breadcrumbArray = [];
+        root = source;
+        pathMargin = config.pathMargin;
+        graphDimensions = config.graphDimensions;
+        dispatch = config.dispatch;
+        m = config.graphMargins;
+        breadcrumb = document.createElement('div');
+        breadcrumb.classList.add('breadcrumb');
+
+        container.appendChild(breadcrumb);
+        container.appendChild(createScrollContainer([source]));
+    }
 
     return {
-        initialize: function (source, config) {
-            var vis = document.getElementById('graph');
-
-            currentDepth = 0;
-            breadcrumbArray = [];
-            root = source;
-            pathMargin = config.pathMargin;
-            graphDimensions = config.graphDimensions;
-            dispatch = config.dispatch;
-            m = config.graphMargins;
-            breadcrumb = document.createElement('div');
-            breadcrumb.classList.add('breadcrumb');
-
-            vis.appendChild(breadcrumb);
-            vis.appendChild(createScrollContainer([source]));
-        },
-
+        initialize: initialize,
         update: update
     };
 }());
