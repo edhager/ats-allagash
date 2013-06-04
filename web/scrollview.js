@@ -7,7 +7,13 @@ var ScrollView = (function () {
         pathMargin,
         breadcrumb,
         breadcrumbArray,
-        currentDepth;
+        currentDepth,
+        breadcrumbClass = 'breadcrumb',
+        scrollContainerClass = 'scrollcontainer',
+        selectClass = 'select',
+        selectedClass = 'selected',
+        optionClass = 'option',
+        hiddenClass = 'hidden';
 
 
     function createScrollContainer(nodes) {
@@ -22,7 +28,7 @@ var ScrollView = (function () {
         
         container.appendChild(searchBox);
         container.appendChild(select);
-        container.classList.add('scrollcontainer');
+        container.classList.add(scrollContainerClass);
         container.dataset.depth = currentDepth++;
 
         _selectionChangeHandler = function (e) {
@@ -37,9 +43,9 @@ var ScrollView = (function () {
         searchBox.addEventListener('keyup', _searchInputHandler);
 
         select.addEventListener('click', _selectionChangeHandler);
-        select.classList.add('select');
+        select.classList.add(selectClass);
 
-        option.classList.add('option');
+        option.classList.add(optionClass);
 
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -60,18 +66,18 @@ var ScrollView = (function () {
             oldSelection,
             nodeExit,
             i;
-        if (target.classList.contains('option') &&
+        if (target.classList.contains(optionClass) &&
             select.dataset.selectedIndex !== selectionIndex) {
             // new selection
             select.dataset.selectedIndex = selectionIndex;
-            oldSelection = select.querySelectorAll('.selected');
+            oldSelection = select.querySelectorAll('.' + selectedClass);
             for (i = 0; i < oldSelection.length; i++) {
-                oldSelection[i].classList.remove('selected');
+                oldSelection[i].classList.remove(selectedClass);
             }
 
-            target.classList.add('selected');
+            target.classList.add(selectedClass);
 
-            nodeExit = vis.selectAll('div.scrollcontainer')
+            nodeExit = vis.selectAll('div.' + scrollContainerClass)
                 .filter(function () {
                     if (+this.dataset.depth > +pruneDepth) {
                         prunedCount++;
@@ -95,9 +101,9 @@ var ScrollView = (function () {
         for (i = 0; i < options.length; i++) {
             option = options[i];
             if (option.innerText.toLowerCase().indexOf(str) < 0) {
-                option.classList.add('hidden');
+                option.classList.add(hiddenClass);
             } else {
-                option.classList.remove('hidden');
+                option.classList.remove(hiddenClass);
             }
         }
     }
@@ -137,7 +143,7 @@ var ScrollView = (function () {
         dispatch = config.dispatch;
         m = config.graphMargins;
         breadcrumb = document.createElement('div');
-        breadcrumb.classList.add('breadcrumb');
+        breadcrumb.classList.add(breadcrumbClass);
 
         container.appendChild(breadcrumb);
         container.appendChild(createScrollContainer([source]));

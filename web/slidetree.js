@@ -19,7 +19,16 @@ var SlideTree = (function () {
         diagonal = d3.svg.diagonal()
                 .projection(function (d) {
                     return [d.y, d.x];
-                });
+                }),
+        getNodeFill = function (d) {
+                if (d.children) {
+                    if (d.children.length) {
+                        return 'lightcoral';
+                    }
+                    return 'lightgray';
+                }
+                return 'lightsteelblue';
+            };
 
     return {
 
@@ -216,26 +225,10 @@ var SlideTree = (function () {
                 });
 
             nodeUpdate.select("rect")
-                .style('fill', function (d) {
-                    if (d.children) {
-                        if (d.children.length) {
-                            return 'lightcoral';
-                        }
-                        return 'lightgray';
-                    }
-                    return 'lightsteelblue';
-                });
+                .style('fill', getNodeFill);
 
             nodeUpdate.select("circle")
-                .style('fill', function (d) {
-                    if (d.children) {
-                        if (d.children.length) {
-                            return 'lightcoral';
-                        }
-                        return 'lightgray';
-                    }
-                    return '#fff';
-                })
+                .style('fill', getNodeFill)
                 .attr("r", 4.5);
 
             nodeUpdate.select("text")

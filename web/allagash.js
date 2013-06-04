@@ -83,13 +83,14 @@ var Allagash = (function () {
                 callback(node);
                 return;
             }
-            if (!node.children) {
-                node.children = [];
-            }
             if (isLoading) {
                 return;
             }
+
             isLoading = true;
+            if (!node.children) {
+                node.children = [];
+            }
             d3.json(node.outgoing_relationships, function (json) {
                 var count = json.length;
                 if (!count) {
