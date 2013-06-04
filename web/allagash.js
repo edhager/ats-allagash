@@ -2,7 +2,27 @@
 var Allagash = (function () {
     "use strict";
 
-    var isLoading;
+    var isLoading,
+        loadSpinner,
+        loadSpinnerTimeout;
+
+    function showLoadSpinner() {
+        if (!loadSpinnerTimeout) {
+            loadSpinnerTimeout = setTimeout(function () {
+                loadSpinner.classList.remove('hidden');
+                loadSpinnerTimeout = null;
+            }, 500);
+        }
+    }
+
+    function hideLoadSpinner() {
+        if (loadSpinnerTimeout) {
+            clearTimeout(loadSpinnerTimeout);
+            loadSpinnerTimeout = null;
+        } else {
+            loadSpinner.classList.add('hidden');
+        }
+    }
 
     return {
 
@@ -43,6 +63,7 @@ var Allagash = (function () {
                 graph;
             this.view = view;
             isLoading = false;
+            loadSpinner = document.querySelector('img.spinner');
 
             // clean up old vis
             graph = document.getElementById('graph');
@@ -88,10 +109,12 @@ var Allagash = (function () {
                 return;
             }
             isLoading = true;
+            showLoadSpinner();
             d3.json(node.outgoing_relationships, function (json) {
                 var count = json.length;
                 if (!count) {
                     isLoading = false;
+                    hideLoadSpinner();
                     node.childrenLoaded = true;
                     callback(node);
                 } else {
@@ -104,6 +127,7 @@ var Allagash = (function () {
                             count--;
                             if (count === 0) {
                                 isLoading = false;
+                                hideLoadSpinner();
                                 node.childrenLoaded = true;
                                 callback(node);
                             }
