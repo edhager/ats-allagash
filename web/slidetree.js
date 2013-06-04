@@ -88,7 +88,7 @@ var SlideTree = (function () {
                     }
                 };
 
-            if (source.children) {
+            if (source.children && source.children.length) {
                 trans = -source.y;
             } else {
                 if (source.parent) {
@@ -218,7 +218,10 @@ var SlideTree = (function () {
             nodeUpdate.select("rect")
                 .style('fill', function (d) {
                     if (d.children) {
-                        return 'lightcoral';
+                        if (d.children.length) {
+                            return 'lightcoral';
+                        }
+                        return 'lightgray';
                     }
                     return 'lightsteelblue';
                 });
@@ -226,7 +229,10 @@ var SlideTree = (function () {
             nodeUpdate.select("circle")
                 .style('fill', function (d) {
                     if (d.children) {
-                        return 'lightcoral';
+                        if (d.children.length) {
+                            return 'lightcoral';
+                        }
+                        return 'lightgray';
                     }
                     return '#fff';
                 })
@@ -322,7 +328,7 @@ var SlideTree = (function () {
          */
         toggle: function (node) {
             var self = this;
-            if (node.children) {
+            if (node.children && node.children.length) {
                 node.hiddenChildren = node.children;
                 delete node.children;
                 self.update(node);
@@ -331,7 +337,7 @@ var SlideTree = (function () {
                     node.children = node.hiddenChildren;
                     delete node.hiddenChildren;
                     self.update(node);
-                } else {
+                } else if (!node.childrenLoaded) {
                     dispatch.loadChildren(node, function (node) {
                         self.update(node);
                     });

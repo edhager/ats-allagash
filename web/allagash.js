@@ -1,6 +1,9 @@
 /*global d3*/
 var Allagash = (function () {
     "use strict";
+
+    var isLoading;
+
     return {
 
         // The amount of whitespace above and below nodes that have children showing.
@@ -66,7 +69,8 @@ var Allagash = (function () {
                 if (node) {
                     d3.json(node.labels, function (labels) {
                         var data = node.data;
-                        node.name = labels[0] + ': ' + self.nameFormatters[labels[0]](data);
+                        node.name = (labels[0] + ': ' +
+                                     self.nameFormatters[labels[0]](data)).toLowerCase();
                         callback(node);
                     });
                 }
@@ -82,18 +86,29 @@ var Allagash = (function () {
             if (!node.children) {
                 node.children = [];
             }
+            if (isLoading) {
+                return;
+            }
+            isLoading = true;
             d3.json(node.outgoing_relationships, function (json) {
                 var count = json.length;
-                json.forEach(function (outgoing) {
-                    self.loadNode(outgoing.end, function (endNode) {
-                        node.children.push(endNode);
-                        count -= 1;
-                        if (count === 0) {
-                            node.childrenLoaded = true;
-                            callback(node);
-                        }
+                if (!count) {
+                    isLoading = false;
+                    node.childrenLoaded = true;
+                    callback(node);
+                } else {
+                    json.forEach(function (outgoing) {
+                        self.loadNode(outgoing.end, function (endNode) {
+                            node.children.push(endNode);
+                            count -= 1;
+                            if (count === 0) {
+                                isLoading = false;
+                                node.childrenLoaded = true;
+                                callback(node);
+                            }
+                        });
                     });
-                });
+                }
             });
         }
     };

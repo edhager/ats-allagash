@@ -104,7 +104,7 @@ var ScrollView = (function () {
 
     function update(source) {
         updateBreadcrumb(source);
-        if (source.children) {
+        if (source.children && source.children.length) {
             vis.node().appendChild(createScrollContainer(source.children));
         }
     }
