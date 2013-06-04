@@ -1,4 +1,5 @@
 var ScrollView = (function () {
+    "use strict";
     var vis,
         dispatch,
         root,
@@ -59,7 +60,8 @@ var ScrollView = (function () {
             oldSelection,
             nodeExit,
             i;
-        if (select.dataset.selectedIndex !== selectionIndex) {
+        if (target.classList.contains('option') &&
+            select.dataset.selectedIndex !== selectionIndex) {
             // new selection
             select.dataset.selectedIndex = selectionIndex;
             oldSelection = select.querySelectorAll('.selected');
