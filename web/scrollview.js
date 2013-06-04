@@ -9,6 +9,7 @@ var ScrollView = (function () {
         breadcrumbArray,
         currentDepth,
         breadcrumbClass = 'breadcrumb',
+        breadcrumbNodeClass = 'breadcrumb-node',
         scrollContainerClass = 'scrollcontainer',
         selectClass = 'select',
         selectedClass = 'selected',
@@ -117,17 +118,29 @@ var ScrollView = (function () {
 
     function updateBreadcrumb(node) {
         var breadcrumbStr,
-            index = currentDepth - 1;
-        if (index >= 0) {
-            breadcrumbArray.splice(index, breadcrumbArray.length, node);
+            breadcrumbNode = document.createElement('span'),
+            insertIndex = currentDepth - 1,
+            i;
+        clearBreadcrumb();
+        if (insertIndex >= 0) {
+            breadcrumbArray.splice(insertIndex, breadcrumbArray.length, node);
         } else {
             breadcrumbArray.push(node);
         }
 
-        breadcrumbStr = breadcrumbArray.map(function (d) {
-            return d.name;
-        }).join(' > ');
-        breadcrumb.innerText = breadcrumbStr;
+        breadcrumbNode.classList.add(breadcrumbNodeClass);
+        for (i = 0; i < breadcrumbArray.length; i++) {
+            breadcrumbNode = breadcrumbNode.cloneNode();
+            breadcrumbNode.innerText = breadcrumbArray[i].name;          
+            breadcrumb.appendChild(breadcrumbNode);
+        }
+    }
+    
+    function clearBreadcrumb() {
+        var child;
+        while(child = breadcrumb.lastChild) {
+            breadcrumb.removeChild(child);
+        }
     }
 
     function initialize(source, config) {

@@ -99,7 +99,7 @@ var Allagash = (function () {
             });
         },
 
-        loadChildren: function (node, callback) {
+        loadChildren: function (node, callback, relation) {
             var self = this;
             if (node.childrenLoaded) {
                 callback(node);
@@ -110,7 +110,7 @@ var Allagash = (function () {
             }
             isLoading = true;
             showLoadSpinner();
-            d3.json(node.outgoing_relationships, function (json) {
+            d3.json(node[relation] || node.outgoing_relationships, function (json) {
                 var count = json.length;
                 if (!count) {
                     isLoading = false;
@@ -118,8 +118,8 @@ var Allagash = (function () {
                     node.childrenLoaded = true;
                     callback(node);
                 } else {
-                    json.forEach(function (outgoing) {
-                        self.loadNode(outgoing.end, function (endNode) {
+                    json.forEach(function (relationship) {
+                        self.loadNode(relationship.end, function (endNode) {
                             if (!node.children) {
                                 node.children = [];
                             }
