@@ -24,6 +24,23 @@ var Allagash = (function () {
         }
     }
 
+    function getAdjacent(node, edges) {
+        var edge = edges[0],
+            urlParams,
+            index,
+            nodeId;
+        urlParams = node.labels.split('/');
+        index = urlParams.indexOf('node') + 1;
+        if (index) {
+            nodeId = urlParams[index];
+            urlParams = edge.end.split('/');
+            if (urlParams[urlParams.length - 1] === nodeId) {
+                return 'start';
+            }
+        }
+        return 'end';
+    }
+
     return {
 
         // The amount of whitespace above and below nodes that have children showing.
@@ -111,19 +128,21 @@ var Allagash = (function () {
             isLoading = true;
             showLoadSpinner();
             d3.json(node[relation] || node.outgoing_relationships, function (json) {
-                var count = json.length;
+                var count = json.length,
+                    adjacent;
                 if (!count) {
                     isLoading = false;
                     hideLoadSpinner();
                     node.childrenLoaded = true;
                     callback(node);
                 } else {
+                    adjacent = getAdjacent(node, json);
                     json.forEach(function (relationship) {
-                        self.loadNode(relationship.end, function (endNode) {
+                        self.loadNode(relationship[adjacent], function (adjacentNode) {
                             if (!node.children) {
                                 node.children = [];
                             }
-                            node.children.push(endNode);
+                            node.children.push(adjacentNode);
                             count--;
                             if (count === 0) {
                                 isLoading = false;
