@@ -42,6 +42,7 @@ var Allagash = (function () {
             var self = this, m = this.graphMargins, dispatch,
                 graph;
             this.view = view;
+            isLoading = false;
 
             // clean up old vis
             graph = document.getElementById('graph');
@@ -86,11 +87,7 @@ var Allagash = (function () {
             if (isLoading) {
                 return;
             }
-
             isLoading = true;
-            if (!node.children) {
-                node.children = [];
-            }
             d3.json(node.outgoing_relationships, function (json) {
                 var count = json.length;
                 if (!count) {
@@ -100,8 +97,11 @@ var Allagash = (function () {
                 } else {
                     json.forEach(function (outgoing) {
                         self.loadNode(outgoing.end, function (endNode) {
+                            if (!node.children) {
+                                node.children = [];
+                            }
                             node.children.push(endNode);
-                            count -= 1;
+                            count--;
                             if (count === 0) {
                                 isLoading = false;
                                 node.childrenLoaded = true;

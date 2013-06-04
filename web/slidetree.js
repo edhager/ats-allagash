@@ -22,10 +22,7 @@ var SlideTree = (function () {
                 }),
         getNodeFill = function (d) {
                 if (d.children) {
-                    if (d.children.length) {
-                        return 'lightcoral';
-                    }
-                    return 'lightgray';
+                    return 'lightcoral';
                 }
                 return 'lightsteelblue';
             };
@@ -97,7 +94,7 @@ var SlideTree = (function () {
                     }
                 };
 
-            if (source.children && source.children.length) {
+            if (source.children) {
                 trans = -source.y;
             } else {
                 if (source.parent) {
@@ -321,7 +318,7 @@ var SlideTree = (function () {
          */
         toggle: function (node) {
             var self = this;
-            if (node.children && node.children.length) {
+            if (node.children) {
                 node.hiddenChildren = node.children;
                 delete node.children;
                 self.update(node);
