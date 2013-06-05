@@ -31,6 +31,7 @@ var ScrollView = (function () {
         container.appendChild(select);
         container.classList.add(scrollContainerClass);
         container.dataset.depth = currentDepth++;
+        container.setAttribute('tabindex', '0');
 
         _selectionChangeHandler = function (e) {
             selectionChangeHandler(e, select, container.dataset.depth);
@@ -134,6 +135,7 @@ var ScrollView = (function () {
             breadcrumbNode.innerText = breadcrumbArray[i].name;          
             breadcrumb.appendChild(breadcrumbNode);
         }
+        breadcrumb.scrollLeft = breadcrumb.scrollWidth;
     }
     
     function clearBreadcrumb() {

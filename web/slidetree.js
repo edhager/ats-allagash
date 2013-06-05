@@ -108,11 +108,7 @@ var SlideTree = (function () {
 
             // sort the nodes by depth and x position
             nodes.sort(function (a, b) {
-                var result = a.depth - b.depth;
-                if (result === 0) {
-                    result = a.x - b.x;
-                }
-                return result;
+                return a.depth - b.depth || a.x - b.x;
             });
 
             nodes.forEach(function (d) {
