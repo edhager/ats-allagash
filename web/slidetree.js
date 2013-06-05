@@ -52,13 +52,14 @@ var SlideTree = (function () {
                     self.zoom();
                 });
 
-            svg = d3.select("#graph").append("svg:svg");
-
-            vis = svg.attr("width", "100%")
+            svg = d3.select("#graph").append("svg:svg")
                 .attr('pointer-events', 'all')
-                .call(zoomController)
-                .attr("height", "100%")
-                .append("svg:g")
+                .style('position', 'absolute')
+                .style("width", "100%")
+                .style("height", "100%")
+                .call(zoomController);
+
+            vis = svg.append("svg:g")
                 .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
             tree = d3.layout.tree()
@@ -67,7 +68,6 @@ var SlideTree = (function () {
 
             tooltip = d3.select('#tooltip')
                 .style('display', 'none');
-
 
             nodeIdGen = 0;
             this.update(source);
