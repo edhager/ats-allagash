@@ -244,9 +244,7 @@ var SlideTree = (function () {
             if (!this.noLinesMode) {
                 // Update the links…
                 linkSelection = vis.selectAll("path.link")
-                    .data(tree.links(nodes), function (d) {
-                        return d.target.id;
-                    });
+                    .data(tree.links(nodes));
 
                 // Enter any new links at the parent's previous position.
                 linkSelection.enter().insert("svg:path", "g")
