@@ -52,7 +52,7 @@ var ScrollView = (function () {
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
             option = option.cloneNode();
-            option.innerText = node.name;
+            option.textContent = node.name;
             option.setAttribute('title', node.name);
             option.__data__ = node;
             option.dataset.index = i;
@@ -102,7 +102,7 @@ var ScrollView = (function () {
             i;
         for (i = 0; i < options.length; i++) {
             option = options[i];
-            if (option.innerText.toLowerCase().indexOf(str) < 0) {
+            if (option.textContent.toLowerCase().indexOf(str) < 0) {
                 option.classList.add(hiddenClass);
             } else {
                 option.classList.remove(hiddenClass);
@@ -132,7 +132,7 @@ var ScrollView = (function () {
         breadcrumbNode.classList.add(breadcrumbNodeClass);
         for (i = 0; i < breadcrumbArray.length; i++) {
             breadcrumbNode = breadcrumbNode.cloneNode();
-            breadcrumbNode.innerText = breadcrumbArray[i].name;          
+            breadcrumbNode.textContent = breadcrumbArray[i].name;          
             breadcrumb.appendChild(breadcrumbNode);
         }
         breadcrumb.scrollLeft = breadcrumb.scrollWidth;
