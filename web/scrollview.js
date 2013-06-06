@@ -1,6 +1,10 @@
+// TODO
+// Make the select panes keyboard navigable.
+
 var ScrollView = (function () {
     "use strict";
     var vis,
+        view,
         dispatch,
         root,
         graphDimensions,
@@ -113,7 +117,16 @@ var ScrollView = (function () {
     function update(source) {
         updateBreadcrumb(source);
         if (source.children && source.children.length) {
-            vis.node().appendChild(createScrollContainer(source.children));
+            view.appendChild(createScrollContainer(source.children));
+            d3.select('div.scrollview')
+                .transition()
+                .duration(500)
+                .style('left', function () {
+                    if (currentDepth > 4) {
+                        return ((5 - currentDepth) * 232) + 'px';
+                    }
+                    return '0px';
+                });
         }
     }
 
@@ -147,6 +160,8 @@ var ScrollView = (function () {
 
     function initialize(source, config) {
         var container;
+        view = document.createElement('div');
+        view.classList.add('scrollview');
         vis = d3.select('#graph');
         container = vis.node();
 
@@ -160,8 +175,9 @@ var ScrollView = (function () {
         breadcrumb = document.createElement('div');
         breadcrumb.classList.add(breadcrumbClass);
 
+        view.appendChild(createScrollContainer([source]));
         container.appendChild(breadcrumb);
-        container.appendChild(createScrollContainer([source]));
+        container.appendChild(view);
     }
 
     return {

@@ -16,7 +16,7 @@
     <style type="text/css">
 
         * {
-            color: #333;
+            color: #3f3f3f;
         }
 
         /* Slide Tree */
@@ -55,8 +55,9 @@
 
         /* scroll view */
         div.scrollcontainer {
-            float: left;
-            margin-left: 15px;
+            display: inline-block;
+            vertical-align: top;
+            margin: 10px 15px;
         }
 
         div.scrollcontainer input {
@@ -93,11 +94,18 @@
         }
 
         span.breadcrumb-node {
-            border: 1px solid #333;
+            border: 1px solid #3f3f3f;
             border-radius: 4px;
             margin-left: 8px;
             padding: 4px;
             background-color: lightsteelblue;
+        }
+
+        div.scrollview {
+            left: 0px;
+            position: relative;
+            white-space: nowrap;
+            overflow-x: visible;
         }
 
         /* main */
@@ -123,7 +131,7 @@
             position: absolute;
             top: 50px;
             left: 10px;
-            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         img.spinner {
