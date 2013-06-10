@@ -40,7 +40,7 @@ var ScrollView = (function () {
             searchBox = document.createElement('input'),
             node,
             _selectionChangeHandler,
-            _searchInputHandler,
+            _searchHandler,
             i;
         
         container.appendChild(searchBox);
@@ -53,12 +53,12 @@ var ScrollView = (function () {
             selectionChangeHandler(e, select, container.dataset.depth);
         };
 
-        _searchInputHandler = function (e) {
-            searchInputHandler(e, select);
+        _searchHandler = function (e) {
+            searchHandler(e, select);
         };
 
         searchBox.setAttribute('type', 'text');
-        searchBox.addEventListener('keyup', _searchInputHandler);
+        searchBox.addEventListener('keyup', _searchHandler);
 
         select.addEventListener('click', _selectionChangeHandler);
         select.classList.add(selectClass);
@@ -110,7 +110,7 @@ var ScrollView = (function () {
         }
     }
 
-    function searchInputHandler(e, select) {
+    function searchHandler(e, select) {
         // filter scroll container
         var options = select.children,
             option,
