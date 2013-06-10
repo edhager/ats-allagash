@@ -5,10 +5,13 @@ var ScrollView = (function () {
     "use strict";
     var vis,
         view,
+        d3view,
         dispatch,
         root,
         graphDimensions,
         pathMargin,
+        slider,
+        scale,
         breadcrumb,
         breadcrumbArray,
         currentDepth,
@@ -18,8 +21,17 @@ var ScrollView = (function () {
         selectClass = 'select',
         selectedClass = 'selected',
         optionClass = 'option',
-        hiddenClass = 'hidden';
+        hiddenClass = 'hidden',
+        SCROLL_CONTAINER_WIDTH = 230;
 
+    function setAttributes(elem, attrs) {
+        var key;
+        for (key in attrs) {
+            if (attrs.hasOwnProperty(key)) {
+                elem.setAttribute(key, attrs[key]);
+            }
+        }
+    }
 
     function createScrollContainer(nodes) {
         var container = document.createElement('div'),
@@ -118,16 +130,22 @@ var ScrollView = (function () {
         updateBreadcrumb(source);
         if (source.children && source.children.length) {
             view.appendChild(createScrollContainer(source.children));
-            d3.select('div.scrollview')
-                .transition()
+            setScrollWidth();
+            d3view.transition()
                 .duration(500)
                 .style('left', function () {
                     if (currentDepth > 4) {
-                        return ((5 - currentDepth) * 232) + 'px';
+                        return ((5 - currentDepth) * (SCROLL_CONTAINER_WIDTH + 2)) + 'px';
                     }
                     return '0px';
                 });
         }
+    }
+
+    function createBreadcrumb() {
+        var breadcrumb = document.createElement('div');
+        breadcrumb.classList.add(breadcrumbClass);
+        return breadcrumb;
     }
 
     function updateBreadcrumb(node) {
@@ -158,8 +176,42 @@ var ScrollView = (function () {
         }
     }
 
+    function createNavControls() {
+        slider = document.createElement('input');
+        scale = d3.scale.linear()
+            .domain([0, 100]);
+        slider.classList.add('slider');
+        setAttributes(slider, {
+            'type': 'range',
+            'min': '0',
+            'max': '100',
+            'value': '0'
+        });
+
+        slider.addEventListener('change', function () {
+            var s = -scale(this.value),
+                width = view.offsetWidth;
+            d3view.style('left', s + 'px');
+        });
+        setScrollWidth();
+
+        return slider;
+    }
+
+    function setScrollWidth() {
+        if (currentDepth > 5) {
+            var scrollWidth = Math.max(SCROLL_CONTAINER_WIDTH * (currentDepth - 5), 0);
+            scale.range([0, scrollWidth]);
+            slider.removeAttribute('disabled');
+            slider.value = 100;
+        } else {
+            slider.setAttribute('disabled', 'true');
+        }
+    }
+
     function initialize(source, config) {
-        var container;
+        var container,
+            navControls;
         view = document.createElement('div');
         view.classList.add('scrollview');
         vis = d3.select('#graph');
@@ -172,12 +224,15 @@ var ScrollView = (function () {
         graphDimensions = config.graphDimensions;
         dispatch = config.dispatch;
         m = config.graphMargins;
-        breadcrumb = document.createElement('div');
-        breadcrumb.classList.add(breadcrumbClass);
+
+        breadcrumb = createBreadcrumb();
+        navControls = createNavControls();
 
         view.appendChild(createScrollContainer([source]));
         container.appendChild(breadcrumb);
         container.appendChild(view);
+        container.appendChild(navControls);
+        d3view = d3.select('div.scrollview');
     }
 
     return {
