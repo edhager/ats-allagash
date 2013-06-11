@@ -6,6 +6,24 @@ var Allagash = (function () {
         loadSpinner,
         loadSpinnerTimeout;
 
+    // TODO move this to utils file.
+    function qXhr(path) {
+        var response = Q.defer(),
+            request = new XMLHttpRequest();
+        request.open("GET", path, true);
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+                if (request.status === 200) {
+                    response.resolve(JSON.parse(request.responseText));
+                } else {
+                    response.reject("HTTP " + request.status + " for " + path);
+                }   
+            }
+        };
+        request.send('');
+        return response.promise;
+    }
+
     function showLoadSpinner() {
         if (!loadSpinnerTimeout) {
             loadSpinnerTimeout = setTimeout(function () {
@@ -91,29 +109,33 @@ var Allagash = (function () {
             dispatch = d3.dispatch('loadChildren');
             dispatch.on('loadChildren', this.loadChildren.bind(this));
 
-            this.loadNode(this.firstRequest, function (node) {
-                self.root = node;
-                view.initialize(node, {
-                    graphDimensions: self.graphDimensions,
-                    pathMargin: self.pathMargin,
-                    graphMargins: m,
-                    dispatch: dispatch
+            this.loadNode(this.firstRequest)
+                .then(function (node) {
+                    self.root = node;
+                    view.initialize(node, {
+                        graphDimensions: self.graphDimensions,
+                        pathMargin: self.pathMargin,
+                        graphMargins: m,
+                        dispatch: dispatch
+                    });
+                }, function (reason) {
+                    console.warn('request failed: ' + reason);
                 });
-            });
         },
 
-        loadNode: function (url, callback) {
-            var self = this;
-            d3.json(url, function (node) {
-                if (node) {
-                    d3.json(node.labels, function (labels) {
-                        var data = node.data;
-                        node.name = (labels[0] + ': ' +
-                                     self.nameFormatters[labels[0]](data)).toLowerCase();
-                        callback(node);
-                    });
-                }
-            });
+        loadNode: function (url) {
+            var self = this,
+                node;
+            return qXhr(url)
+                .then(function (value) {
+                    node = value;
+                    return qXhr(node.labels);
+                })
+                .then(function (labels) {
+                    node.name = (labels[0] + ': ' +
+                                 self.nameFormatters[labels[0]](node.data)).toLowerCase();
+                    return node;
+                });
         },
 
         loadChildren: function (node, callback, relation) {
@@ -127,33 +149,38 @@ var Allagash = (function () {
             }
             isLoading = true;
             showLoadSpinner();
-            d3.json(node[relation] || node.outgoing_relationships, function (json) {
-                var count = json.length,
+
+            qXhr(node[relation] || node.outgoing_relationships)
+                .then(function (json) {
+                    var count = json.length,
                     adjacent;
-                if (!count) {
-                    isLoading = false;
-                    hideLoadSpinner();
-                    node.childrenLoaded = true;
-                    callback(node);
-                } else {
-                    adjacent = getAdjacent(node, json);
-                    json.forEach(function (relationship) {
-                        self.loadNode(relationship[adjacent], function (adjacentNode) {
-                            if (!node.children) {
-                                node.children = [];
-                            }
-                            node.children.push(adjacentNode);
-                            count--;
-                            if (count === 0) {
-                                isLoading = false;
-                                hideLoadSpinner();
-                                node.childrenLoaded = true;
-                                callback(node);
-                            }
+                    if (!count) {
+                        isLoading = false;
+                        hideLoadSpinner();
+                        node.childrenLoaded = true;
+                        callback(node);
+                    } else {
+                        adjacent = getAdjacent(node, json);
+                        json.forEach(function (relationship) {
+                            self.loadNode(relationship[adjacent])
+                            .then(function (adjacentNode) {
+                                if (!node.children) {
+                                    node.children = [];
+                                }
+                                node.children.push(adjacentNode);
+                                count--;
+                                if (count === 0) {
+                                    isLoading = false;
+                                    hideLoadSpinner();
+                                    node.childrenLoaded = true;
+                                    callback(node);
+                                }
+                            }, function () {
+                                console.warn('request failed: ' + reason);
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
         }
     };
 }());
