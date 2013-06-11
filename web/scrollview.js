@@ -1,6 +1,3 @@
-// TODO
-// Make the select panes keyboard navigable.
-
 var ScrollView = (function () {
     "use strict";
 
