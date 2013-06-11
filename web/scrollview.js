@@ -3,6 +3,7 @@
 
 var ScrollView = (function () {
     "use strict";
+
     var vis,
         view,
         d3view,
@@ -15,6 +16,7 @@ var ScrollView = (function () {
         breadcrumb,
         breadcrumbArray,
         currentDepth,
+        isLoading,
         breadcrumbClass = 'breadcrumb',
         breadcrumbNodeClass = 'breadcrumb-node',
         scrollContainerClass = 'scrollcontainer',
@@ -39,31 +41,40 @@ var ScrollView = (function () {
             option = document.createElement('div'),
             searchBox = document.createElement('input'),
             node,
-            _selectionChangeHandler,
+            _keyNavHandler,
             _searchHandler,
+            _focusChangeHandler,
             i;
         
         container.appendChild(searchBox);
         container.appendChild(select);
         container.classList.add(scrollContainerClass);
         container.dataset.depth = currentDepth++;
-        container.setAttribute('tabindex', '0');
-
-        _selectionChangeHandler = function (e) {
-            selectionChangeHandler(e, select, container.dataset.depth);
-        };
 
         _searchHandler = function (e) {
             searchHandler(e, select);
         };
 
+        _keyNavHandler = function (e) {
+            keyNavHandler(e, select);
+        };
+
+        _focusChangeHandler = function (e) {
+            if (!isLoading) {
+                focusChangeHandler(e, select);
+            }
+        };
+
         searchBox.setAttribute('type', 'text');
         searchBox.addEventListener('keyup', _searchHandler);
 
-        select.addEventListener('click', _selectionChangeHandler);
+        select.addEventListener('keydown', _keyNavHandler);
+        select.addEventListener('focus', _focusChangeHandler, true);
         select.classList.add(selectClass);
+        select.setAttribute('tabindex' , '0');
 
         option.classList.add(optionClass);
+        option.setAttribute('tabindex', '-1');
 
         for (i = 0; i < nodes.length; i++) {
             node = nodes[i];
@@ -77,13 +88,24 @@ var ScrollView = (function () {
         return container;
     }
 
-    function selectionChangeHandler(e, select, pruneDepth) {
-        var target = e.target,
+    function focusChangeHandler(e, select) {
+        var target = document.activeElement,
             selectionIndex = target.dataset.index,
+            pruneDepth = select.parentElement.dataset.depth,
             prunedCount = 0,
             oldSelection,
             nodeExit,
             i;
+        if (target.classList.contains(selectClass)) {
+            if (target.dataset.selectedIndex) {
+                return;
+            }
+            target = target.children[0];
+            if (target) {
+                selectionIndex = select.dataset.selectedIndex = 0;
+                target.focus();
+            }
+        }
         if (target.classList.contains(optionClass) &&
             select.dataset.selectedIndex !== selectionIndex) {
             // new selection
@@ -102,11 +124,34 @@ var ScrollView = (function () {
                         return true;
                     }
                 });
-            currentDepth -= prunedCount;
+            // XXX block selection change until this is completed.
+            isLoading = true;
             dispatch.loadChildren(target.__data__, function (node) {
+                currentDepth -= prunedCount;
                 nodeExit.remove();
                 update(node);
+                isLoading = false;
             });
+        }
+    }
+
+    function keyNavHandler(e, select) {
+        var keyCode = e.keyCode,
+            index = +select.dataset.selectedIndex,
+            children = select.children,
+            selectedChild;
+        if (keyCode === 38) {
+            // nav up
+            index--;
+            selectedChild = children[index];
+        } else if (keyCode === 40) {
+            // nav down
+            index++;
+            selectedChild = children[index];
+        }
+        if (selectedChild) {
+            selectedChild.focus();
+            select.dataset.selectedIndex = index;
         }
     }
 

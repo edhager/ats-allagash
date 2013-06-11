@@ -186,14 +186,15 @@
             viewMap = {
                 scrollview: ScrollView,
                 slidetree: SlideTree
-            };
+            },
+            view = SlideTree;
 
     Allagash.apiUrl = 'http://localhost:8080/';
 
     Allagash.firstRequest = Allagash.apiUrl + 'db/data/node/' + rootId;
     Allagash.graphDimensions = [h, w];
     Allagash.graphMargins = m;
-    Allagash.go(SlideTree);
+    Allagash.go(view);
     currentNode.text(rootId);
 
     d3.select('#root-selection')
@@ -213,7 +214,7 @@
 
     d3.select('#view-selection')
             .on('change', function () {
-                var view = viewMap[d3.event.target.value];
+                view = viewMap[d3.event.target.value];
                 Allagash.go(view);
             });
 
