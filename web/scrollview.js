@@ -43,17 +43,14 @@ var ScrollView = (function () {
             _focusChangeHandler,
             i;
         
-        container.appendChild(searchBox);
-        container.appendChild(select);
-        container.classList.add(scrollContainerClass);
-        container.dataset.depth = currentDepth++;
-
         _searchHandler = function (e) {
             searchHandler(e, select);
         };
 
         _keyNavHandler = function (e) {
-            keyNavHandler(e, select);
+            if (!isLoading) {
+                keyNavHandler(e, select);
+            }
         };
 
         _focusChangeHandler = function (e) {
@@ -61,6 +58,11 @@ var ScrollView = (function () {
                 focusChangeHandler(e, select);
             }
         };
+
+        container.appendChild(searchBox);
+        container.appendChild(select);
+        container.classList.add(scrollContainerClass);
+        container.dataset.depth = currentDepth++;
 
         searchBox.setAttribute('type', 'text');
         searchBox.addEventListener('keyup', _searchHandler);
@@ -89,47 +91,54 @@ var ScrollView = (function () {
         var target = document.activeElement,
             selectionIndex = target.dataset.index,
             pruneDepth = select.parentElement.dataset.depth,
-            prunedCount = 0,
-            oldSelection,
-            nodeExit,
+            prunedNodes,
             i;
+        // check to see if the select container is focused.
         if (target.classList.contains(selectClass)) {
+            // If select already has a selection, don't do anything.
             if (target.dataset.selectedIndex) {
                 return;
             }
+            // otherwise, set selection to the first element.
             target = target.children[0];
-            if (target) {
-                selectionIndex = select.dataset.selectedIndex = 0;
-                target.focus();
-            }
+            selectionIndex = select.dataset.selectedIndex = 0;
+            target.focus();
         }
+
+        // make sure there's actually a change in selection.
         if (target.classList.contains(optionClass) &&
             select.dataset.selectedIndex !== selectionIndex) {
-            // new selection
             select.dataset.selectedIndex = selectionIndex;
-            oldSelection = select.querySelectorAll('.' + selectedClass);
-            for (i = 0; i < oldSelection.length; i++) {
-                oldSelection[i].classList.remove(selectedClass);
-            }
-
-            target.classList.add(selectedClass);
-
-            nodeExit = vis.selectAll('div.' + scrollContainerClass)
-                .filter(function () {
-                    if (+this.dataset.depth > +pruneDepth) {
-                        prunedCount++;
-                        return true;
-                    }
-                });
-            // XXX block selection change until this is completed.
+            removeSelection(select);
+            newSelection(target);
+            prunedNodes = pruneTree(pruneDepth);
             isLoading = true;
             dispatch.loadChildren(target.__data__, function (node) {
-                currentDepth -= prunedCount;
-                nodeExit.remove();
+                currentDepth -= prunedNodes[0].length;
+                prunedNodes.remove();
                 update(node);
                 isLoading = false;
             });
         }
+    }
+
+    function newSelection(target) {
+        target.classList.add(selectedClass);
+    }
+
+    function removeSelection(select) {
+        var oldSelection = select.querySelectorAll('.' + selectedClass),
+            i;
+        for (i = 0; i < oldSelection.length; i++) {
+            oldSelection[i].classList.remove(selectedClass);
+        }
+    }
+
+    function pruneTree(pruneDepth) {
+        return vis.selectAll('div.' + scrollContainerClass)
+            .filter(function () {
+                return +this.dataset.depth > +pruneDepth;
+            });
     }
 
     function keyNavHandler(e, select) {
