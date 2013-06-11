@@ -66,8 +66,7 @@ var SlideTree = (function () {
                 .size(null)
                 .elementsize([30, 450]);
 
-            tooltip = d3.select('#tooltip')
-                .style('display', 'none');
+            tooltip = d3.select('#tooltip');
 
             nodeIdGen = 0;
             this.update(source);
@@ -163,7 +162,7 @@ var SlideTree = (function () {
                 })
                 .on('mouseover', function (d) {
                     // show tooltip
-                    tooltip.style('display', '')
+                    tooltip.classed('hidden', 0)
                         .select('span').text(d.name);
                 })
                 .on('mousemove', function () {
@@ -187,7 +186,7 @@ var SlideTree = (function () {
                 })
                 .on('mouseout', function () {
                     // hide tooltip
-                    tooltip.style('display', 'none');
+                    tooltip.classed('hidden', 1);
                 });
 
             nodeEnter.append("svg:circle")
