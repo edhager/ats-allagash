@@ -21,6 +21,7 @@ var ScrollView = (function () {
         selectedClass = 'selected',
         optionClass = 'option',
         hiddenClass = 'hidden',
+        VIEW_SIZE = 5,
         SCROLL_CONTAINER_WIDTH = 230;
 
     function setAttributes(elem, attrs) {
@@ -186,8 +187,8 @@ var ScrollView = (function () {
             d3view.transition()
                 .duration(500)
                 .style('left', function () {
-                    if (currentDepth > 4) {
-                        return ((5 - currentDepth) * (SCROLL_CONTAINER_WIDTH + 2)) + 'px';
+                    if (currentDepth >= VIEW_SIZE) {
+                        return ((VIEW_SIZE - currentDepth) * (SCROLL_CONTAINER_WIDTH + 2)) + 'px';
                     }
                     return '0px';
                 });
@@ -263,8 +264,8 @@ var ScrollView = (function () {
     }
 
     function setScrollWidth() {
-        if (currentDepth > 5) {
-            var scrollWidth = Math.max(SCROLL_CONTAINER_WIDTH * (currentDepth - 5), 0);
+        if (currentDepth > VIEW_SIZE) {
+            var scrollWidth = Math.max(SCROLL_CONTAINER_WIDTH * (currentDepth - VIEW_SIZE), 0);
             scale.range([0, scrollWidth]);
             slider.removeAttribute('disabled');
             slider.value = 100;
