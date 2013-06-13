@@ -179,6 +179,7 @@ var ScrollView = (function () {
 
     function update(source) {
         updateBreadcrumb(source);
+        updateContentPane(source);
         if (source.children && source.children.length) {
             view.appendChild(createScrollContainer(source.children));
             setScrollWidth();
@@ -222,7 +223,8 @@ var ScrollView = (function () {
     
     function clearBreadcrumb() {
         var child;
-        while(child = breadcrumb.lastChild) {
+        while(breadcrumb.lastChild) {
+            child = breadcrumb.lastChild;
             breadcrumb.removeChild(child);
         }
     }
@@ -249,6 +251,17 @@ var ScrollView = (function () {
         return slider;
     }
 
+    function createContentPane() {
+        var contentPane = document.createElement('div');
+        contentPane.classList.add('content');
+        return contentPane;
+    }
+
+    function updateContentPane(source) {
+        var contentPane = document.querySelector('div.content');
+        contentPane.textContent = '[ content about ' + source.name + ' goes here ]';
+    }
+
     function setScrollWidth() {
         if (currentDepth > 5) {
             var scrollWidth = Math.max(SCROLL_CONTAINER_WIDTH * (currentDepth - 5), 0);
@@ -262,7 +275,8 @@ var ScrollView = (function () {
 
     function initialize(source, config) {
         var container,
-            navControls;
+            navControls,
+            contentPane;
         view = document.createElement('div');
         view.classList.add('scrollview');
         vis = d3.select('#graph');
@@ -278,11 +292,13 @@ var ScrollView = (function () {
 
         breadcrumb = createBreadcrumb();
         navControls = createNavControls();
+        contentPane = createContentPane();
 
         view.appendChild(createScrollContainer([source]));
         container.appendChild(breadcrumb);
         container.appendChild(view);
         container.appendChild(navControls);
+        container.appendChild(contentPane);
         d3view = d3.select('div.scrollview');
     }
 
