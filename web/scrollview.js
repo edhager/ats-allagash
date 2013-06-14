@@ -203,8 +203,9 @@ var ScrollView = (function () {
 
     function updateBreadcrumb(node) {
         var breadcrumbStr,
-            breadcrumbNode = document.createElement('span'),
+            breadcrumbNode = document.createElement('div'),
             insertIndex = currentDepth - 1,
+            name,
             i;
         clearBreadcrumb();
         if (insertIndex >= 0) {
@@ -215,8 +216,9 @@ var ScrollView = (function () {
 
         breadcrumbNode.classList.add(breadcrumbNodeClass);
         for (i = 0; i < breadcrumbArray.length; i++) {
+            name = breadcrumbArray[i].name;
             breadcrumbNode = breadcrumbNode.cloneNode();
-            breadcrumbNode.textContent = breadcrumbArray[i].name;          
+            breadcrumbNode.textContent = breadcrumbNode.title = name;
             breadcrumb.appendChild(breadcrumbNode);
         }
         breadcrumb.scrollLeft = breadcrumb.scrollWidth;

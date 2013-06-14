@@ -44,7 +44,7 @@
             pointer-events: none;
             text-align: center;
             background: lightgoldenrodyellow;
-            border: 1px solid #888;
+            border: 1px solid #BBB;
             border-radius: 8px;
             padding: 2px;
         }
@@ -56,23 +56,29 @@
 
         /* scroll view */
         div.scrollcontainer {
+            border: 1px solid #BBB;
+            border-radius: 8px;
             display: inline-block;
             vertical-align: top;
             margin: 10px 15px;
         }
 
         div.scrollcontainer input {
-            border-radius: 8px;
+            border-radius: 6px;
+            border: 1px solid #BBB;
             display: block;
             width: 196px;
+            margin: 2px auto;
         }
 
         div.scrollcontainer div.select {
-            border-radius: 8px;
             height: 300px;
             width: 200px;
-            border: 1px solid #888;
-            overflow-y: scroll;
+            overflow-y: hidden;
+        }
+
+        div.scrollcontainer div.select:hover {
+            overflow-y: auto;
         }
 
         div.scrollcontainer div.option {
@@ -85,7 +91,7 @@
         }
 
         div.content {
-            border: 1px solid #888;
+            border: 1px solid #BBB;
             border-radius: 4px;
             width: 400px;
             height: 200px;
@@ -95,23 +101,27 @@
         div.breadcrumb {
             box-sizing: border-box;
             width: 100%;
-            background-color: lightgray;
+            background-color: #DEDEDE;
             padding: 6px 8px;
             height: 46px;
             white-space: nowrap;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         div.breadcrumb:hover {
             overflow-x: auto;
         }
 
-        span.breadcrumb-node {
-            border: 1px solid #3f3f3f;
+        div.breadcrumb-node {
+            border: 1px solid #BBB;
             border-radius: 4px;
             margin-left: 8px;
             padding: 4px;
             background-color: lightsteelblue;
+            width: 200px;
+            overflow-x: hidden;
+            white-space: nowrap;
+            display: inline-block;
         }
 
         div.scrollview {
@@ -137,14 +147,14 @@
             float: left;
             margin-right: 15px;
             padding: 5px;
-            border: 1px solid #888;
+            border: 1px solid #BBB;
             border-radius: 4px;
         }
 
         .view {
             width: 1280px;
             height: 800px;
-            border: 1px solid #888;
+            border: 1px solid #BBB;
             border-radius: 4px;
             position: absolute;
             top: 50px;
