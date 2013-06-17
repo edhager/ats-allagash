@@ -241,7 +241,7 @@ var ScrollView = (function () {
             'type': 'range',
             'min': '0',
             'max': '100',
-            'value': '0'
+            'value': '100'
         });
 
         slider.addEventListener('change', function () {
@@ -270,10 +270,10 @@ var ScrollView = (function () {
             var scrollWidth = Math.max(SCROLL_CONTAINER_WIDTH * (currentDepth - VIEW_SIZE), 0);
             scale.range([0, scrollWidth]);
             slider.removeAttribute('disabled');
-            slider.value = 100;
         } else {
             slider.setAttribute('disabled', 'true');
         }
+        slider.value = 100;
     }
 
     function initialize(source, config) {
