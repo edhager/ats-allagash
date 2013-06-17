@@ -10,6 +10,7 @@ var SlideTree = (function () {
         xScale,
         yScale,
         vis,
+        fisheye,
         tree,
         tooltip,
         nodeIdGen,
@@ -26,6 +27,13 @@ var SlideTree = (function () {
                 }
                 return 'lightsteelblue';
             };
+
+
+    function applyFisheye() {
+        nodeSelection.attr('transform', function (d) {
+            return 'translate(' + d.y + ',' + fisheye(d.x) + ')';
+        });
+    }
 
     return {
 
@@ -49,7 +57,7 @@ var SlideTree = (function () {
                 .range([0, 10]);
             zoomController.x(yScale).y(xScale)
                 .on('zoom', function () {
-                    self.zoom();
+                    //self.zoom();
                 });
 
             svg = d3.select("#graph").append("svg:svg")
@@ -60,7 +68,15 @@ var SlideTree = (function () {
                 .call(zoomController);
 
             vis = svg.append("svg:g")
-                .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+                .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+                .on('mousemove', function () {
+                    var mouse = d3.mouse(this);
+                    fisheye.focus(mouse[1]);
+                    applyFisheye();
+                });
+
+            fisheye = d3.fisheye.scale(d3.scale.identity)
+                .domain([0, 450]);
 
             tree = d3.layout.tree()
                 .size(null)
