@@ -94,7 +94,15 @@ var SlideTree = (function () {
 
     function applyFisheye() {
         nodeSelection.attr('transform', function (d) {
-            return 'translate(' + d.y + ',' + fisheye(d.x) + ')';
+            return 'translate(' + yScale(d.y) + ',' + xScale(fisheye(d.x)) + ')';
+        });
+        linkSelection.attr("d", function (d) {
+            var source = d.source,
+            target = d.target;
+
+            source = {x: xScale(fisheye(source.x)), y: yScale(source.y)};
+            target = {x: xScale(fisheye(target.x)), y: yScale(target.y)};
+            return diagonal({source: source, target: target});
         });
     }
 
@@ -128,15 +136,15 @@ var SlideTree = (function () {
                 .style('position', 'absolute')
                 .style("width", "100%")
                 .style("height", "100%")
-                .call(zoomController);
-
-            vis = svg.append("svg:g")
-                .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
                 .on('mousemove', function () {
                     var mouse = d3.mouse(this);
                     fisheye.focus(mouse[1]);
                     applyFisheye();
-                });
+                })
+                .call(zoomController);
+
+            vis = svg.append("svg:g")
+                .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
             fisheye = d3.fisheye.scale(d3.scale.identity)
                 .domain([0, 450]);
