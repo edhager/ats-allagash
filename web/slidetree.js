@@ -14,19 +14,83 @@ var SlideTree = (function () {
         tree,
         tooltip,
         nodeIdGen,
-        nodes,
+        nodesArray,
         nodeSelection,
         linkSelection,
         diagonal = d3.svg.diagonal()
-                .projection(function (d) {
-                    return [d.y, d.x];
-                }),
-        getNodeFill = function (d) {
-                if (d.children) {
-                    return 'lightcoral';
+            .projection(function (d) {
+                return [d.y, d.x];
+            });
+
+    function getNodeFill(d) {
+        if (d.children) {
+            return 'lightcoral';
+        }
+        return 'lightsteelblue';
+    }
+
+    function resetZoom(source) {
+        var trans = 0;
+        if (source.children) {
+            trans = -source.y;
+        } else {
+            if (source.parent) {
+                trans = -source.parent.y;
+            }
+        }
+        zoomController.translate([trans, 0]).scale(1);
+    }
+
+    function applyShift(nodes, shiftAmount) {
+        if (shiftAmount) {
+            // Apply the shift amount to the cache.
+            nodes.forEach(function (d) {
+                d.x += shiftAmount;
+            });
+        }
+    }
+
+    /**
+     * space nodes so that nodes in the current path
+     * are visually distinct from others
+     */
+    function separatePath() {
+        var nodeCache = [],
+            xOffset = 0, // remember, x and y are swapped.
+            totalShiftAmount = 0,
+            rootVerticalShift = 0,
+            pathFound,
+            lastDepth;
+        nodesArray.forEach(function (d) {
+            var depth = d.depth,
+                inPath = !!d.children;
+
+            if (depth !== lastDepth) {
+                applyShift(nodeCache, rootVerticalShift);
+                nodeCache = [];
+                pathFound = false;
+                lastDepth = depth;
+                totalShiftAmount = 0;
+            }
+
+            if (inPath) {
+                rootVerticalShift = (root.x - d.x);
+                totalShiftAmount -= pathMargin;
+                applyShift(nodeCache, totalShiftAmount);
+                pathFound = true;
+            } else {
+                if (pathFound) {
+                    d.x += pathMargin;
                 }
-                return 'lightsteelblue';
-            };
+            }
+            nodeCache.push(d);
+        });
+
+        applyShift(nodeCache, rootVerticalShift);
+
+        xOffset = 300 - root.x;
+        applyShift(nodesArray, xOffset);
+    }
 
 
     function applyFisheye() {
@@ -92,73 +156,23 @@ var SlideTree = (function () {
             var self = this, nodeEnter, nodeUpdate,
                 nodeExit,
                 duration = d3.event && d3.event.altKey ? 5000 : 500,
-                xOffset = 0, // remember, x and y are swapped.
-                lastDepth,
-                pathFound,
-                nodeCache = [], trans = 0,
-                totalShiftAmount = 0,
-                rootVerticalShift = 0,
-                elementsize = tree.elementsize(),
-                nodes,
-                applyShift = function (nodes, shiftAmount) {
-                    if (shiftAmount) {
-                        // Apply the shift amount to the cache.
-                        nodes.forEach(function (d) {
-                            d.x += shiftAmount;
-                        });
-                    }
-                };
+                elementsize = tree.elementsize();
 
-            if (source.children) {
-                trans = -source.y;
-            } else {
-                if (source.parent) {
-                    trans = -source.parent.y;
-                }
-            }
-            zoomController.translate([trans, 0]).scale(1);
+            resetZoom(source);
 
             // Compute the new tree layout.
-            nodes = tree.nodes(root).reverse();
+            nodesArray = tree.nodes(root).reverse();
 
             // sort the nodes by depth and x position
-            nodes.sort(function (a, b) {
+            nodesArray.sort(function (a, b) {
                 return a.depth - b.depth || a.x - b.x;
             });
 
-            nodes.forEach(function (d) {
-                var depth = d.depth,
-                    inPath = !!d.children;
-
-                if (depth !== lastDepth) {
-                    applyShift(nodeCache, rootVerticalShift);
-                    nodeCache = [];
-                    pathFound = false;
-                    lastDepth = depth;
-                    totalShiftAmount = 0;
-                }
-
-                if (inPath) {
-                    rootVerticalShift = (root.x - d.x);
-                    totalShiftAmount -= pathMargin;
-                    applyShift(nodeCache, totalShiftAmount);
-                    pathFound = true;
-                } else {
-                    if (pathFound) {
-                        d.x += pathMargin;
-                    }
-                }
-                nodeCache.push(d);
-            });
-
-            applyShift(nodeCache, rootVerticalShift);
-
-            xOffset = 300 - root.x;
-            applyShift(nodes, xOffset);
+            separatePath();
 
             // Update the nodes…
             nodeSelection = vis.selectAll("g.node")
-                .data(nodes, function (d) {
+                .data(nodesArray, function (d) {
                     if (!d.id) {
                         nodeIdGen += 1;
                         d.id = nodeIdGen;
@@ -259,7 +273,7 @@ var SlideTree = (function () {
             if (!this.noLinesMode) {
                 // Update the links…
                 linkSelection = vis.selectAll("path.link")
-                    .data(tree.links(nodes));
+                    .data(tree.links(nodesArray));
 
                 // Enter any new links at the parent's previous position.
                 linkSelection.enter().insert("svg:path", "g")
@@ -300,7 +314,7 @@ var SlideTree = (function () {
             }
 
             // Stash the old positions for transition.
-            nodes.forEach(function (d) {
+            nodesArray.forEach(function (d) {
                 d.x0 = d.x;
                 d.y0 = d.y;
             });
@@ -345,7 +359,8 @@ var SlideTree = (function () {
         },
 
         collapseSiblings: function (node) {
-            var self = this;
+            var self = this,
+                nodes;
             if (node.parent) {
                 nodes = node.parent.children;
                 if (nodes) {
