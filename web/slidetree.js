@@ -92,7 +92,6 @@ var SlideTree = (function () {
         applyShift(nodesArray, xOffset);
     }
 
-
     function applyFisheye() {
         nodeSelection.attr('transform', function (d) {
             return 'translate(' + d.y + ',' + fisheye(d.x) + ')';
